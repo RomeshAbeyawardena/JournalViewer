@@ -1,20 +1,31 @@
-﻿namespace JournalViewer.Domain.Extensions;
+﻿using System.Collections.Concurrent;
 
-public static class ObjectExtensions
+namespace JournalViewer.Domain.Extensions
 {
-    public static bool IsNotifiable(this object value, out INotifiableEntity notifiableEntity)
+    public static class ObjectExtensions
     {
-        notifiableEntity = null;
-        var type = value.GetType();
-        var baseType = type.BaseType ?? throw new InvalidCastException();
-        var genericType = typeof(INotifiableEntity<>).MakeGenericType(type);
-        
-        if (baseType.IsAssignableFrom(genericType))
-        {
-            notifiableEntity = (INotifiableEntity)value;
-            return true;
-        }
+        // Lazy initialization of ConcurrentDictionary for caching the types
+        private static Lazy<ConcurrentDictionary<Type, Type>> GenericTypesCache =
+            new(() => new());
 
-        return false;
+        public static bool IsNotifiable(this object value, out INotifiableEntity? notifiableEntity)
+        {
+            notifiableEntity = null;
+            var type = value.GetType();
+
+            // Cache or retrieve the type that implements INotifiableEntity<>
+            var genericType = GenericTypesCache.Value.GetOrAdd(type,
+                t => typeof(INotifiableEntity<>).MakeGenericType(t));
+
+            // Check if the provided type implements the cached generic interface
+            if (genericType.IsAssignableFrom(type))
+            {
+                // Safely cast to INotifiableEntity if applicable
+                notifiableEntity = value as INotifiableEntity;
+                return notifiableEntity != null;
+            }
+
+            return false;
+        }
     }
 }
