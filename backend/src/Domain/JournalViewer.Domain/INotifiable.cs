@@ -2,7 +2,6 @@
 
 public interface INotifiableEntity
 {
-    NotificationType NotificationType { get; }
     string? GetKey(object model);
     Task<string> PrepareNotificationAsync(object result, NotificationType notificationType, 
         CancellationToken cancellationToken);
