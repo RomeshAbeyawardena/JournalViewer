@@ -1,7 +1,7 @@
-﻿namespace JournalViewer.Domain;
+﻿namespace JournalViewer.Domain.Models;
 
 public class OutboxEntry
-{ 
+{
     public Guid Id { get; set; }
     public required string EntityId { get; set; }
     public NotificationType NotificationType { get; set; }

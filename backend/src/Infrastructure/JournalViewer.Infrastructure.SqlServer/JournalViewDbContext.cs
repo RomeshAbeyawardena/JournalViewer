@@ -1,4 +1,5 @@
 ﻿using JournalViewer.Domain;
+using JournalViewer.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;

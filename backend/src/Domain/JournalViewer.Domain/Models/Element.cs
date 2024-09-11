@@ -1,5 +1,4 @@
-﻿
-namespace JournalViewer.Domain;
+﻿namespace JournalViewer.Domain.Models;
 
 public class Element : NotifiableEntityBase<Element>
 {
