@@ -8,6 +8,13 @@ namespace JournalViewer.Infrastructure.SqlServer;
 
 public class JournalViewDbContext : DbContext
 {
+    private void ConditionalLogTrace(ILogger logger, Action<ILogger> logAction)
+    {
+        if (logger.IsEnabled(LogLevel.Trace))
+        {
+            logAction(logger);
+        }
+    }
     private NotificationType? GetNotificationType(EntityState entityState)
     {
         return entityState switch
@@ -35,8 +42,9 @@ public class JournalViewDbContext : DbContext
                 if (!entry.Entity.IsNotifiable(out var notifiableEntity)
                     || notifiableEntity == null)
                 {
-                    logger.LogTrace("Unable to update outbox for entity {name}: Is not notifiable",
-                        entry.Metadata.Name);
+                    ConditionalLogTrace(logger, logger =>
+                        logger.LogTrace("Unable to update outbox for entity {name}: Is not notifiable",
+                            entry.Metadata.Name));
                     continue;
                 }
 
@@ -44,8 +52,9 @@ public class JournalViewDbContext : DbContext
 
                 if (!notificationType.HasValue)
                 {
-                    logger.LogTrace("Unable to update outbox for entity {name}: Is not the correct type",
-                         entry.Metadata.Name);
+                    ConditionalLogTrace(logger, logger =>
+                        logger.LogTrace("Unable to update outbox for entity {name}: Is not the correct type",
+                         entry.Metadata.Name));
                     continue;
                 }
 
@@ -53,12 +62,14 @@ public class JournalViewDbContext : DbContext
 
                 if (keyValue == null)
                 {
-                    logger.LogTrace("Unable to update outbox for entity {name}: Does not have a valid primary key", entry.Metadata.Name);
+                    ConditionalLogTrace(logger, logger =>
+                    logger.LogTrace("Unable to update outbox for entity {name}: Does not have a valid primary key", entry.Metadata.Name));
                     continue;
                 }
 
                 outboxEntryList.Add(new OutboxEntry
                 {
+                    Subject = entry.Metadata.Name,
                     EntityId = notifiableEntity.GetKey(entry)
                         ?? keyValue?.ToString() ?? string.Empty,
                     Payload = await notifiableEntity
@@ -76,6 +87,11 @@ public class JournalViewDbContext : DbContext
         // Add all outbox entries at once
         if (outboxEntryList.Count > 0)
         {
+            var delimitedAffectedEntities = string.Join(", ", outboxEntryList.Select(s => s.Subject));
+
+            ConditionalLogTrace(logger, logger =>
+            logger.LogTrace("Adding {delimitedAffectedEntities} to Outbox table", delimitedAffectedEntities));
+
             OutboxEntries.AddRange(outboxEntryList);
         }
 
