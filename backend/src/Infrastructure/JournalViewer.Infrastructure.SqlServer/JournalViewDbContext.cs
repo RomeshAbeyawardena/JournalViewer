@@ -1,5 +1,4 @@
 ﻿using JournalViewer.Domain;
-using JournalViewer.Domain.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -34,6 +33,33 @@ public class JournalViewDbContext : DbContext
         }
 
         return await base.AddAsync(entity, cancellationToken);
+    }
+
+    public override EntityEntry<TEntity> Update<TEntity>(TEntity entity)
+    {
+        var logger = this.GetService<ILogger<JournalViewDbContext>>();
+        var factory = this.GetService<IEntityInterceptorFactory<JournalViewDbContext>>();
+        var subject = Subject.OnUpdate;
+        try
+        {
+            var interceptor = factory.GetInterceptor<TEntity>(subject);
+            var updateTask = interceptor.CanIntercept(subject, this, entity, CancellationToken.None)
+            .ContinueWith(async canInterceptTask =>
+            {
+                if (canInterceptTask.Result)
+                {
+                    await interceptor.Intercept(subject, this, entity, CancellationToken.None);
+                }
+            });
+
+            // Await the task to avoid blocking the thread
+            updateTask.Wait();
+        }
+        catch (Exception exception)
+        {
+            logger.LogError(exception, "Unable to intercept registered intercepted for entity {name}", typeof(TEntity).Name);
+        }
+        return base.Update(entity);
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
