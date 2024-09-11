@@ -2,6 +2,7 @@
 using JournalViewer.Domain.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.Extensions.Logging;
 
 namespace JournalViewer.Infrastructure.SqlServer;
 
@@ -9,7 +10,8 @@ public class JournalViewDbContext : DbContext
 {
     private NotificationType? GetNotificationType(EntityState entityState)
     {
-        switch (entityState) {
+        switch (entityState)
+        {
             case EntityState.Added:
                 return NotificationType.Add;
             case EntityState.Modified:
@@ -26,34 +28,52 @@ public class JournalViewDbContext : DbContext
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
+        var logger = this.GetService<ILogger<JournalViewDbContext>>();
+
         var timeProvider = this.GetService<TimeProvider>();
 
-        foreach(var entry in ChangeTracker.Entries())
+        foreach (var entry in ChangeTracker.Entries())
         {
-
-            if(!entry.Entity.IsNotifiable(out var notifiableEntity))
+            try
             {
-                continue;
+                if (!entry.Entity.IsNotifiable(out var notifiableEntity)
+                    || notifiableEntity == null)
+                {
+                    continue;
+                }
+
+                var notificationType = GetNotificationType(entry.State);
+
+                if (!notificationType.HasValue)
+                {
+                    continue;
+                }
+
+                var primaryKey = entry.Metadata.FindPrimaryKey();
+
+                if (primaryKey == null)
+                {
+                    continue;
+                }
+
+                var keyValue = entry.Property(primaryKey.Properties.First().Name).CurrentValue;
+
+                OutboxEntries.Add(new OutboxEntry
+                {
+                    EntityId = notifiableEntity.GetKey(entry)
+                        ?? keyValue?.ToString() ?? string.Empty,
+                    Payload = await notifiableEntity
+                                .PrepareNotificationAsync(entry, notificationType.Value,
+                    cancellationToken),
+                    NotificationType = notificationType.Value,
+                    Created = timeProvider.GetUtcNow()
+                });
             }
-
-            var notificationType = GetNotificationType(entry.State);
-
-            if (!notificationType.HasValue)
+            catch (Exception ex)
             {
-                continue;
+                logger.LogError(ex, "Unable to update outbox for entity {name}", entry.Metadata.Name);
             }
-
-            OutboxEntries.Add(new OutboxEntry
-            {
-                EntityId = notifiableEntity.GetKey(entry) ?? string.Empty,
-                Payload = await notifiableEntity
-                            .PrepareNotificationAsync(entry, notificationType.Value,
-                cancellationToken),
-                NotificationType = notificationType.Value,
-                Created = timeProvider.GetUtcNow()
-            });
         }
-
         return await base.SaveChangesAsync(cancellationToken);
     }
 }
