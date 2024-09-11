@@ -72,9 +72,8 @@ public class JournalViewDbContext : DbContext
         {
             try
             {
-                var interceptor = factory.GetInterceptor(subject);
-
-                if (await interceptor.CanIntercept(subject, 
+                var interceptor = factory.GetInterceptor(subject, entry.GetType());
+                if (interceptor != null && await interceptor.CanIntercept(subject,
                     this, entry, cancellationToken))
                 {
                     await interceptor.Intercept(subject, this,

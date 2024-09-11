@@ -21,9 +21,3 @@ public interface IEntityInterceptor<TContext, TEntity> : IEntityInterceptor
     Task Intercept(Subject subject, TContext context, 
         TEntity entity, CancellationToken cancellationToken);
 }
-
-public interface IEntityInterceptorFactory<TContext>
-{
-    IEntityInterceptor GetInterceptor(Subject subject);
-    IEntityInterceptor<TContext, TEntity> GetInterceptor<TEntity>(Subject subject);
-}
