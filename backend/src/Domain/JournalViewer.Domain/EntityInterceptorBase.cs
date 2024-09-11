@@ -1,9 +1,14 @@
 ﻿namespace JournalViewer.Domain;
 
-public abstract class EntityInterceptorBase<TContext, TEntity> : IEntityInterceptor<TContext, TEntity>
+public abstract class EntityInterceptorBase<TContext, TEntity>(Subject subject) : IEntityInterceptor<TContext, TEntity>
 {
-    public Subject Subject { get; set; }
-    public abstract Task<bool> CanIntercept(Subject subject, TContext context, TEntity entity, CancellationToken cancellationToken);
+    public Subject Subject { get; } = subject;
+
+    public virtual Task<bool> CanIntercept(Subject subject, TContext context, TEntity entity, CancellationToken cancellationToken)
+    {
+        return Task.FromResult(Subject == subject);
+    }
+
     public abstract Task Intercept(Subject subject, TContext context,
         TEntity entity, CancellationToken cancellationToken);
 

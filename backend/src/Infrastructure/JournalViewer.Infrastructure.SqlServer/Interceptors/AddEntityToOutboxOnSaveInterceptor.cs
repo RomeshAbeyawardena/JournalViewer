@@ -1,5 +1,6 @@
 ﻿using JournalViewer.Domain;
 using JournalViewer.Domain.Extensions;
+using JournalViewer.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Logging;
@@ -8,10 +9,11 @@ namespace JournalViewer.Infrastructure.SqlServer.Interceptors;
 
 internal class AddEntityToOutboxOnSaveInterceptor<TEntity>(
     ILogger<AddEntityToOutboxOnSaveInterceptor<TEntity>> logger, 
-    TimeProvider timeProvider) : EntityInterceptorBase<JournalViewDbContext, EntityEntry<TEntity>>
+    TimeProvider timeProvider) 
+    : EntityInterceptorBase<JournalViewDbContext, EntityEntry<TEntity>>(Subject.OnSave)
     where TEntity : class
 {
-    private NotificationType? GetNotificationType(EntityState entityState)
+    private static NotificationType? GetNotificationType(EntityState entityState)
     {
         return entityState switch
         {
@@ -30,13 +32,13 @@ internal class AddEntityToOutboxOnSaveInterceptor<TEntity>(
         }
     }
 
-    public override Task<bool> CanIntercept(Subject subject, JournalViewDbContext context,
+    public override async Task<bool> CanIntercept(Subject subject, JournalViewDbContext context,
         EntityEntry<TEntity> entity, CancellationToken cancellationToken)
     {
-        return Task.FromResult(
-            subject == Subject.OnSave &&
+        return 
+            await base.CanIntercept(subject, context, entity, cancellationToken) &&
             entity.Entity.IsNotifiable(out var notifiableEntity)
-                    && notifiableEntity != null);
+                    && notifiableEntity != null;
     }
 
     public override async Task Intercept(Subject subject, JournalViewDbContext context,

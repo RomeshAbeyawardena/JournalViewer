@@ -9,7 +9,7 @@ public enum Subject
 
 public interface IEntityInterceptor
 {
-    Subject Subject { get; set; }
+    Subject Subject { get; }
     Task<bool> CanIntercept(Subject subject, object context, 
         object entity, CancellationToken cancellationToken);
     Task Intercept(Subject subject, object context, object entity, CancellationToken cancellationToken);

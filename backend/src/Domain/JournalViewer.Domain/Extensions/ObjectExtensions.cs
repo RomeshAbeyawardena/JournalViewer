@@ -8,6 +8,18 @@ namespace JournalViewer.Domain.Extensions
         private static Lazy<ConcurrentDictionary<Type, Type>> GenericTypesCache =
             new(() => new());
 
+        public static bool HasCreatedTimestamp(this object value, out ICreatedTimestamp? createdTimestamp)
+        {
+            createdTimestamp = null;
+            if (value is ICreatedTimestamp created)
+            {
+                createdTimestamp = created;
+                return true;
+            }
+
+            return false;
+        }
+
         public static bool IsNotifiable(this object value, out INotifiableEntity? notifiableEntity)
         {
             notifiableEntity = null;
