@@ -1,14 +1,14 @@
 ﻿
 using JournalViewer.Domain;
 
-namespace JournalViewer.Infrastructure.SqlServer
+namespace JournalViewer.Infrastructure.SqlServer;
+
+internal class JournalViewerDbContextEntityInterceptorFactory : EntityInterceptorFactoryBase<JournalViewDbContext>
 {
-    internal class JournalViewerDbContextEntityInterceptorFactory : EntityInterceptorFactoryBase<JournalViewDbContext>
+    
+    public override IEntityInterceptor<JournalViewDbContext, TEntity> 
+        GetInterceptor<TEntity>(Subject subject)
     {
-        public override IEntityInterceptor<JournalViewDbContext, TEntity> 
-            GetInterceptor<TEntity>(Subject subject)
-        {
-            throw new NotImplementedException();
-        }
+        throw new NotImplementedException();
     }
 }
