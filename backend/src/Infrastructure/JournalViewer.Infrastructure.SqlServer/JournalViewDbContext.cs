@@ -10,17 +10,13 @@ public class JournalViewDbContext : DbContext
 {
     private NotificationType? GetNotificationType(EntityState entityState)
     {
-        switch (entityState)
+        return entityState switch
         {
-            case EntityState.Added:
-                return NotificationType.Add;
-            case EntityState.Modified:
-                return NotificationType.Update;
-            case EntityState.Deleted:
-                return NotificationType.Delete;
-            default:
-                return null;
-        }
+            EntityState.Added => (NotificationType?)NotificationType.Add,
+            EntityState.Modified => (NotificationType?)NotificationType.Update,
+            EntityState.Deleted => (NotificationType?)NotificationType.Delete,
+            _ => null,
+        };
     }
 
     public DbSet<Element> Elements { get; set; }
@@ -31,7 +27,7 @@ public class JournalViewDbContext : DbContext
         var logger = this.GetService<ILogger<JournalViewDbContext>>();
 
         var timeProvider = this.GetService<TimeProvider>();
-
+        var outboxEntryList = new List<OutboxEntry>();
         foreach (var entry in ChangeTracker.Entries())
         {
             try
@@ -39,6 +35,8 @@ public class JournalViewDbContext : DbContext
                 if (!entry.Entity.IsNotifiable(out var notifiableEntity)
                     || notifiableEntity == null)
                 {
+                    logger.LogTrace("Unable to update outbox for entity {name}: Is not notifiable",
+                        entry.Metadata.Name);
                     continue;
                 }
 
@@ -46,19 +44,20 @@ public class JournalViewDbContext : DbContext
 
                 if (!notificationType.HasValue)
                 {
+                    logger.LogTrace("Unable to update outbox for entity {name}: Is not the correct type",
+                         entry.Metadata.Name);
                     continue;
                 }
 
-                var primaryKey = entry.Metadata.FindPrimaryKey();
+                var keyValue = entry.Properties.FirstOrDefault(p => p.Metadata.IsPrimaryKey())?.CurrentValue;
 
-                if (primaryKey == null)
+                if (keyValue == null)
                 {
+                    logger.LogTrace("Unable to update outbox for entity {name}: Does not have a valid primary key", entry.Metadata.Name);
                     continue;
                 }
 
-                var keyValue = entry.Property(primaryKey.Properties.First().Name).CurrentValue;
-
-                OutboxEntries.Add(new OutboxEntry
+                outboxEntryList.Add(new OutboxEntry
                 {
                     EntityId = notifiableEntity.GetKey(entry)
                         ?? keyValue?.ToString() ?? string.Empty,
@@ -74,6 +73,12 @@ public class JournalViewDbContext : DbContext
                 logger.LogError(ex, "Unable to update outbox for entity {name}", entry.Metadata.Name);
             }
         }
+        // Add all outbox entries at once
+        if (outboxEntryList.Count > 0)
+        {
+            OutboxEntries.AddRange(outboxEntryList);
+        }
+
         return await base.SaveChangesAsync(cancellationToken);
     }
 }
