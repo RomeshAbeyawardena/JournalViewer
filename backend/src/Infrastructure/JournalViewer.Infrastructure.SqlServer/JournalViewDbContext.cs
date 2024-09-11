@@ -8,13 +8,14 @@ namespace JournalViewer.Infrastructure.SqlServer;
 
 public class JournalViewDbContext : DbContext
 {
-    private void ConditionalLogTrace(ILogger logger, Action<ILogger> logAction)
+    private static void ConditionalLogTrace(ILogger logger, Action<ILogger> logAction)
     {
         if (logger.IsEnabled(LogLevel.Trace))
         {
             logAction(logger);
         }
     }
+
     private NotificationType? GetNotificationType(EntityState entityState)
     {
         return entityState switch
