@@ -8,8 +8,8 @@ using Microsoft.Extensions.Logging;
 namespace JournalViewer.Infrastructure.SqlServer.Interceptors;
 
 internal class AddEntityToOutboxOnSaveInterceptor<TEntity>(
-    ILogger<AddEntityToOutboxOnSaveInterceptor<TEntity>> logger, 
-    TimeProvider timeProvider) 
+    TimeProvider timeProvider,
+    ILogger<AddEntityToOutboxOnSaveInterceptor<TEntity>>? logger = null) 
     : EntityInterceptorBase<JournalViewDbContext, EntityEntry<TEntity>>(Subject.OnSave)
     where TEntity : class
 {
@@ -24,8 +24,13 @@ internal class AddEntityToOutboxOnSaveInterceptor<TEntity>(
         };
     }
 
-    private static void ConditionalLogTrace(ILogger logger, Action<ILogger> logAction)
+    private static void ConditionalLogTrace(ILogger? logger, Action<ILogger> logAction)
     {
+        if(logger == null)
+        {
+            return;
+        }
+
         if (logger.IsEnabled(LogLevel.Trace))
         {
             logAction(logger);
@@ -68,7 +73,7 @@ internal class AddEntityToOutboxOnSaveInterceptor<TEntity>(
         if (keyValue == null)
         {
             ConditionalLogTrace(logger, logger =>
-            logger.LogTrace("Unable to update outbox for entity {name}: Does not have a valid primary key", entity.Metadata.Name));
+            logger?.LogTrace("Unable to update outbox for entity {name}: Does not have a valid primary key", entity.Metadata.Name));
             return;
         }
 

@@ -1,15 +1,50 @@
+using JournalViewer.Domain;
+using JournalViewer.Domain.Models;
+using JournalViewer.Infrastructure.SqlServer.Interceptors;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.Extensions.Logging;
+using NSubstitute;
+
 namespace JournalViewer.Infrastructure.SqlServer.Tests;
 
 public class Tests
 {
+    private JournalViewerDbContextEntityInterceptorFactory sut;
+    private IServiceProvider serviceProvider;
+    private TimeProvider timeProvider;
+    
     [SetUp]
     public void Setup()
     {
+        serviceProvider = Substitute.For<IServiceProvider>();
+        timeProvider = Substitute.For<TimeProvider>();
+        
+        sut = new(serviceProvider);
     }
 
     [Test]
     public void Test1()
     {
-        Assert.Pass();
+        serviceProvider.GetService(typeof(AddCreatedTimestampInterceptor<Element>))
+            .Returns(new AddCreatedTimestampInterceptor<EntityEntry<Element>>(timeProvider));
+        serviceProvider.GetService(typeof(AddEntityToOutboxOnSaveInterceptor<Element>))
+            .Returns(new AddEntityToOutboxOnSaveInterceptor<EntityEntry<Element>>(timeProvider));
+
+        var interceptor = sut.GetInterceptors(Subject.OnInsert, typeof(EntityEntry<Element>));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(interceptor.Count(), Is.EqualTo(1));
+            Assert.That(interceptor.ElementAt(0),
+                Is.InstanceOf<AddCreatedTimestampInterceptor<Element>>());
+        });
+
+        interceptor = sut.GetInterceptors(Subject.OnSave, typeof(EntityEntry<Element>));
+        Assert.Multiple(() =>
+        {
+            Assert.That(interceptor.Count(), Is.EqualTo(1));
+            Assert.That(interceptor.ElementAt(0),
+                    Is.InstanceOf<AddEntityToOutboxOnSaveInterceptor<Element>>());
+        });
     }
 }
