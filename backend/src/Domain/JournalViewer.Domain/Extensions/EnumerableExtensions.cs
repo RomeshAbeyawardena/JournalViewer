@@ -2,7 +2,7 @@
 
 public static class EnumerableExtensions
 {
-    public static async Task HandleAsync(this IEnumerable<IEntityInterceptor> entityInterceptors,
+    public static async Task HandleAsync(this IEnumerable<IEntityInterceptor?> entityInterceptors,
         Subject subject, object context, object entity, CancellationToken cancellationToken,
         Action<Exception>? handleError = null)
     {
@@ -10,9 +10,9 @@ public static class EnumerableExtensions
         {
             try
             {
-                if(!await interceptor.CanIntercept(subject, context, entity, cancellationToken))
+                if(interceptor == null || !await interceptor.CanIntercept(subject, context, entity, cancellationToken))
                 {
-                    return;
+                    continue;
                 }
 
                 await interceptor.Intercept(subject, context, entity, cancellationToken);
@@ -24,7 +24,7 @@ public static class EnumerableExtensions
         }
     }
 
-    public static async Task HandleAsync<TContext, TEntity>(this IEnumerable<IEntityInterceptor<TContext,TEntity>> entityInterceptors,
+    public static async Task HandleAsync<TContext, TEntity>(this IEnumerable<IEntityInterceptor<TContext,TEntity>?> entityInterceptors,
         Subject subject, TContext context, TEntity entity, CancellationToken cancellationToken,
         Action<Exception>? handleError = null)
     {
@@ -32,9 +32,10 @@ public static class EnumerableExtensions
         {
             try
             {
-                if (!await interceptor.CanIntercept(subject, context, entity, cancellationToken))
+                if (interceptor == null 
+                    || !await interceptor.CanIntercept(subject, context, entity, cancellationToken))
                 {
-                    return;
+                    continue;
                 }
 
                 await interceptor.Intercept(subject, context, entity, cancellationToken);

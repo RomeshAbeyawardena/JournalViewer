@@ -1,4 +1,5 @@
 ﻿using JournalViewer.Domain;
+using JournalViewer.Domain.Extensions;
 using JournalViewer.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -20,19 +21,9 @@ public class JournalViewDbContext : DbContext
         try
         {
             var interceptors = factory.GetInterceptors<TEntity>(subject);
-            foreach (var interceptor in interceptors)
+            if (interceptors != null)
             {
-                if(interceptor == null)
-                {
-                    continue;
-                }
-
-                if (await interceptor.CanIntercept(subject,
-                        this, entity, cancellationToken))
-                {
-                    await interceptor.Intercept(subject, this,
-                        entity, cancellationToken);
-                }
+                await interceptors.HandleAsync(subject, this, entity, cancellationToken);
             }
         }
         catch(Exception exception)
@@ -51,17 +42,7 @@ public class JournalViewDbContext : DbContext
         try
         {
             var interceptor = factory.GetInterceptors<TEntity>(subject);
-            var updateTask = interceptor.CanIntercept(subject, this, entity, CancellationToken.None)
-            .ContinueWith(async canInterceptTask =>
-            {
-                if (canInterceptTask.Result)
-                {
-                    await interceptor.Intercept(subject, this, entity, CancellationToken.None);
-                }
-            });
-
-            // Await the task to avoid blocking the thread
-            updateTask.Wait();
+            interceptor.HandleAsync(subject, this, entity, CancellationToken.None).Wait();
         }
         catch (Exception exception)
         {
@@ -79,13 +60,8 @@ public class JournalViewDbContext : DbContext
         {
             try
             {
-                var interceptor = factory.GetInterceptor(subject, entry.GetType());
-                if (interceptor != null && await interceptor.CanIntercept(subject,
-                    this, entry, cancellationToken))
-                {
-                    await interceptor.Intercept(subject, this,
-                        entry, cancellationToken);
-                }
+                var interceptors = factory.GetInterceptors(subject, entry.GetType());
+                await interceptors.HandleAsync(subject, this, entry, cancellationToken);
             }
             catch (Exception ex)
             {
