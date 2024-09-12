@@ -19,13 +19,20 @@ public class JournalViewDbContext : DbContext
         var subject = Subject.OnInsert;
         try
         {
-            var interceptor = factory.GetInterceptor<TEntity>(subject);
-
-            if (await interceptor.CanIntercept(subject,
-                    this, entity, cancellationToken))
+            var interceptors = factory.GetInterceptors<TEntity>(subject);
+            foreach (var interceptor in interceptors)
             {
-                await interceptor.Intercept(subject, this,
-                    entity, cancellationToken);
+                if(interceptor == null)
+                {
+                    continue;
+                }
+
+                if (await interceptor.CanIntercept(subject,
+                        this, entity, cancellationToken))
+                {
+                    await interceptor.Intercept(subject, this,
+                        entity, cancellationToken);
+                }
             }
         }
         catch(Exception exception)
@@ -43,7 +50,7 @@ public class JournalViewDbContext : DbContext
         var subject = Subject.OnUpdate;
         try
         {
-            var interceptor = factory.GetInterceptor<TEntity>(subject);
+            var interceptor = factory.GetInterceptors<TEntity>(subject);
             var updateTask = interceptor.CanIntercept(subject, this, entity, CancellationToken.None)
             .ContinueWith(async canInterceptTask =>
             {
