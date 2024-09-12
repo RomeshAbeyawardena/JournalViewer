@@ -1,5 +1,4 @@
-﻿
-using JournalViewer.Domain;
+﻿using JournalViewer.Domain;
 
 namespace JournalViewer.Infrastructure.SqlServer;
 

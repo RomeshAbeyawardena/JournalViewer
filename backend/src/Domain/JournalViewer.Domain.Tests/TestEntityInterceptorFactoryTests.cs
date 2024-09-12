@@ -15,13 +15,18 @@ public class TestEntityInterceptorFactoryTests
     }
 
     [Test]
-    public void Test1()
+    public void GetInterceptors()
     {
         serviceProvider.GetService(typeof(TestEntityInterceptor<TestEntity>))
             .Returns(new TestEntityInterceptor<TestEntity>());
 
         var interceptor = sut.GetInterceptors(Subject.OnSave, typeof(TestEntity));
-        Assert.That(interceptor.FirstOrDefault(), 
-            Is.InstanceOf<TestEntityInterceptor<TestEntity>>());
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(interceptor.Count(), Is.EqualTo(1));
+            Assert.That(interceptor.FirstOrDefault(),
+                Is.InstanceOf<TestEntityInterceptor<TestEntity>>());
+        });
     }
 }
