@@ -10,6 +10,11 @@ namespace JournalViewer.Infrastructure.SqlServer;
 
 public class JournalViewDbContext : DbContext
 {
+    private void HandleError(Exception exception)
+    {
+        throw new InvalidOperationException(exception.Message, exception);
+    }
+
     public DbSet<Element> Elements { get; set; }
     public DbSet<OutboxEntry> OutboxEntries { get; set; }
 
@@ -23,12 +28,13 @@ public class JournalViewDbContext : DbContext
             var interceptors = factory.GetInterceptors<TEntity>(subject);
             if (interceptors != null)
             {
-                await interceptors.HandleAsync(subject, this, entity, cancellationToken);
+                await interceptors.HandleAsync(subject, this, entity, cancellationToken, HandleError);
             }
         }
         catch(Exception exception)
         {
-            logger.LogError(exception, "Unable to intercept registered intercepted for entity {name}", typeof(TEntity).Name);
+            logger.LogError(exception, "Unable to intercept registered intercepted for entity {name}",
+               typeof(TEntity).Name);
         }
 
         return await base.AddAsync(entity, cancellationToken);
@@ -42,7 +48,8 @@ public class JournalViewDbContext : DbContext
         try
         {
             var interceptor = factory.GetInterceptors<TEntity>(subject);
-            interceptor.HandleAsync(subject, this, entity, CancellationToken.None).Wait();
+            interceptor.HandleAsync(subject, this, entity, CancellationToken.None,
+                HandleError).Wait();
         }
         catch (Exception exception)
         {
@@ -61,11 +68,12 @@ public class JournalViewDbContext : DbContext
             try
             {
                 var interceptors = factory.GetInterceptors(subject, entry.GetType());
-                await interceptors.HandleAsync(subject, this, entry, cancellationToken);
+                await interceptors.HandleAsync(subject, this, entry, cancellationToken,
+                    HandleError);
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Unable to update outbox for entity {name}", entry.Metadata.Name);
+                logger.LogError(ex, "Unable to intercept registered intercepted for entity {name}", entry.Metadata.Name);
             }
         }
         
