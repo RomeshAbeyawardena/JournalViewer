@@ -4,9 +4,23 @@ namespace JournalViewer.Domain;
 
 public abstract class EntityInterceptorFactoryBase<TContext> : IEntityInterceptorFactory<TContext>
 {
+    public static IEntityInterceptor? GetFromServiceProviderFactory(
+        Type type,
+        Func<Type, object?> factory)
+    {
+        var interceptor = factory(type);
+        
+        if(interceptor == null) 
+        {
+            return null;
+        }
+
+        return (IEntityInterceptor)interceptor;
+    }
+
     private readonly ConcurrentDictionary<Subject, List<Func<Type,IEntityInterceptor?>>> factory = [];
 
-    protected IEntityInterceptorFactory<TContext> AddSubjectInterceptor(Subject subject, Func<Type, IEntityInterceptor?> entityInterceptor)
+    protected IEntityInterceptorFactory<TContext> Add(Subject subject, Func<Type, IEntityInterceptor?> entityInterceptor)
     {
         factory.AddOrUpdate(subject, (s) => [entityInterceptor], (s, l) => { 
             l.Add(entityInterceptor); 
@@ -35,16 +49,15 @@ public abstract class EntityInterceptorFactoryBase<TContext> : IEntityIntercepto
 
     public IEnumerable<IEntityInterceptor<TContext, TEntity>?> GetInterceptors<TEntity>(Subject subject)
     {
-        IEntityInterceptor<TContext, TEntity>? OnSelect(Func<Type, IEntityInterceptor> type)
-        {
-            var result = type(typeof(TEntity));
-            return (IEntityInterceptor<TContext, TEntity>?)result;
-        }
-
        if(factory.TryGetValue(subject, out var value))
        {
-            return value.Select(OnSelect);
+            return value.Select((type) =>
+            {
+                var result = type(typeof(TEntity));
+                return (IEntityInterceptor<TContext, TEntity>?)result;
+            });
        }
-        return [];
+
+       return [];
     }
 }

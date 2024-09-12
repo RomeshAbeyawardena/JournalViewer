@@ -4,8 +4,9 @@ internal class TestEntityInterceptorFactory : EntityInterceptorFactoryBase<TestC
 {
     public TestEntityInterceptorFactory(IServiceProvider serviceProvider)
     {
-        AddSubjectInterceptor(Subject.OnSave,
-            (t) => (IEntityInterceptor)(serviceProvider
-                .GetService(typeof(TestEntityInterceptor<>).MakeGenericType(t)) ?? throw new NullReferenceException()));
+        base.Add(Subject.OnSave,
+            (t) => GetFromServiceProviderFactory(typeof(TestEntityInterceptor<>)
+                .MakeGenericType(t),
+            t => serviceProvider.GetService(t)));
     }
 }
