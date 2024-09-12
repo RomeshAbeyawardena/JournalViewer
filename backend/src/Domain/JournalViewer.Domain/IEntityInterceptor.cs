@@ -17,6 +17,7 @@ public interface IEntityInterceptor
 
 public interface IEntityInterceptor<TContext, TEntity> : IEntityInterceptor
 {
+    IEntityInterceptor<TContext, TEntity> ChangeType<TSourceType>(IEntityInterceptor<TContext, TSourceType> type);
     Task<bool> CanIntercept(Subject subject, TContext context, TEntity entity, CancellationToken cancellationToken);
     Task Intercept(Subject subject, TContext context, 
         TEntity entity, CancellationToken cancellationToken);

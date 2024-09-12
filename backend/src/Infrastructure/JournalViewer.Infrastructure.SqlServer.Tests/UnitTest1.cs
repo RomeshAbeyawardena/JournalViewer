@@ -26,11 +26,11 @@ public class Tests
     public void Test1()
     {
         serviceProvider.GetService(typeof(AddCreatedTimestampInterceptor<Element>))
-            .Returns(new AddCreatedTimestampInterceptor<EntityEntry<Element>>(timeProvider));
+            .Returns(new AddCreatedTimestampInterceptor<Element>(timeProvider));
         serviceProvider.GetService(typeof(AddEntityToOutboxOnSaveInterceptor<Element>))
-            .Returns(new AddEntityToOutboxOnSaveInterceptor<EntityEntry<Element>>(timeProvider));
+            .Returns(new AddEntityToOutboxOnSaveInterceptor<Element>(timeProvider));
 
-        var interceptor = sut.GetInterceptors(Subject.OnInsert, typeof(EntityEntry<Element>));
+        var interceptor = sut.GetInterceptors(Subject.OnInsert, typeof(Element));
 
         Assert.Multiple(() =>
         {
@@ -39,7 +39,7 @@ public class Tests
                 Is.InstanceOf<AddCreatedTimestampInterceptor<Element>>());
         });
 
-        interceptor = sut.GetInterceptors(Subject.OnSave, typeof(EntityEntry<Element>));
+        interceptor = sut.GetInterceptors(Subject.OnSave, typeof(Element));
         Assert.Multiple(() =>
         {
             Assert.That(interceptor.Count(), Is.EqualTo(1));

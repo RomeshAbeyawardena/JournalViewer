@@ -9,6 +9,11 @@ public abstract class EntityInterceptorBase<TContext, TEntity>(Subject subject) 
         return Task.FromResult(Subject == subject);
     }
 
+    public virtual IEntityInterceptor<TContext, TEntity> ChangeType<TSourceType>(IEntityInterceptor<TContext, TSourceType> type)
+    {
+        return this;
+    }
+
     public abstract Task Intercept(Subject subject, TContext context,
         TEntity entity, CancellationToken cancellationToken);
 
