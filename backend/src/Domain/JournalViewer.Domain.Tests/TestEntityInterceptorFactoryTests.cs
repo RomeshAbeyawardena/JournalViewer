@@ -17,7 +17,9 @@ public class TestEntityInterceptorFactoryTests
     [Test]
     public void Test1()
     {
-        serviceProvider.GetService(typeof(TestEntityInterceptor<TestEntity>));
+        serviceProvider.GetService(typeof(TestEntityInterceptor<TestEntity>))
+            .Returns(new TestEntityInterceptor<TestEntity>());
+
         var interceptor = sut.GetInterceptors(Subject.OnSave, typeof(TestEntity));
         Assert.That(interceptor.FirstOrDefault(), 
             Is.InstanceOf<TestEntityInterceptor<TestEntity>>());

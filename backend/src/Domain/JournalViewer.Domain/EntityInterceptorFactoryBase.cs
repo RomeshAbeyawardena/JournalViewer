@@ -8,7 +8,7 @@ public abstract class EntityInterceptorFactoryBase<TContext> : IEntityIntercepto
 
     protected IEntityInterceptorFactory<TContext> AddSubjectInterceptor(Subject subject, Func<Type, IEntityInterceptor?> entityInterceptor)
     {
-        factory.AddOrUpdate(subject, (s) => [], (s, l) => { 
+        factory.AddOrUpdate(subject, (s) => [entityInterceptor], (s, l) => { 
             l.Add(entityInterceptor); 
             return l; });
         return this;
@@ -35,8 +35,16 @@ public abstract class EntityInterceptorFactoryBase<TContext> : IEntityIntercepto
 
     public IEnumerable<IEntityInterceptor<TContext, TEntity>?> GetInterceptors<TEntity>(Subject subject)
     {
-        return factory.TryGetValue(subject, out var value)
-            ? value.Select(i => (IEntityInterceptor<TContext, TEntity>?)i(typeof(TEntity)))
-            : [];
+        IEntityInterceptor<TContext, TEntity>? OnSelect(Func<Type, IEntityInterceptor> type)
+        {
+            var result = type(typeof(TEntity));
+            return (IEntityInterceptor<TContext, TEntity>?)result;
+        }
+
+       if(factory.TryGetValue(subject, out var value))
+       {
+            return value.Select(OnSelect);
+       }
+        return [];
     }
 }
