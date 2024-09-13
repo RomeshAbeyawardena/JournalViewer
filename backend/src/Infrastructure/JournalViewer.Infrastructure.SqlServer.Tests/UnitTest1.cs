@@ -39,7 +39,7 @@ public class Tests
                 Is.InstanceOf<AddCreatedTimestampInterceptor<Element>>());
         });
 
-        interceptor = sut.GetInterceptors(Subject.OnSave, typeof(Element));
+        interceptor = sut.GetInterceptors(Subject.OnSave, typeof(EntityEntry<Element>));
         Assert.Multiple(() =>
         {
             Assert.That(interceptor.Count(), Is.EqualTo(1));

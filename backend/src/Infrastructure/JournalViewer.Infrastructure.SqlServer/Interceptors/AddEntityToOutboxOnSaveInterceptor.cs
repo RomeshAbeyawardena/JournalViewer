@@ -37,6 +37,11 @@ internal class AddEntityToOutboxOnSaveInterceptor<TEntity>(
         }
     }
 
+    public override Type ChangeType(Type type)
+    {
+        return typeof(EntityEntry<>).MakeGenericType(type);
+    }
+
     public override async Task<bool> CanIntercept(Subject subject, JournalViewDbContext context,
         EntityEntry<TEntity> entity, CancellationToken cancellationToken)
     {

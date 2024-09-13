@@ -28,11 +28,16 @@ public abstract class EntityInterceptorFactoryBase<TContext> : IEntityIntercepto
         return this;
     }
 
+    public virtual Type ChangeType(Type type)
+    {
+        return type;
+    }
+
     public IEnumerable<IEntityInterceptor?> GetInterceptors(Subject subject, Type entityType)
     {
         var method = typeof(EntityInterceptorFactoryBase<TContext>)
             .GetMethod(nameof(GetInterceptors), [typeof(Subject)])?
-            .MakeGenericMethod(entityType);
+            .MakeGenericMethod(ChangeType(entityType));
 
         if (method != null)
         {

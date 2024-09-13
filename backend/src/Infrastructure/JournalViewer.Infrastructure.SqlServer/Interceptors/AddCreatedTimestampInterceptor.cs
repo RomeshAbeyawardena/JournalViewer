@@ -8,10 +8,9 @@ public class AddCreatedTimestampInterceptor<TEntity>(TimeProvider timeProvider)
     : EntityInterceptorBase<JournalViewDbContext, EntityEntry<TEntity>>(Subject.OnInsert)
     where TEntity : class
 {
-    public override IEntityInterceptor<JournalViewDbContext, EntityEntry<TEntity>> ChangeType<TSourceType>(IEntityInterceptor<JournalViewDbContext, TSourceType> type)
+    public override Type ChangeType(Type type)
     {
-        
-        return base.ChangeType(type);
+        return typeof(EntityEntry<>).MakeGenericType(type);
     }
 
     public override async Task<bool> CanIntercept(Subject subject, JournalViewDbContext context, EntityEntry<TEntity> entity, CancellationToken cancellationToken)

@@ -1,10 +1,15 @@
 ﻿using JournalViewer.Domain;
 using JournalViewer.Infrastructure.SqlServer.Interceptors;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace JournalViewer.Infrastructure.SqlServer;
 
 internal class JournalViewerDbContextEntityInterceptorFactory : EntityInterceptorFactoryBase<JournalViewDbContext>
 {
+    public override Type ChangeType(Type type)
+    {
+        return base.ChangeType(typeof(EntityEntry<>).MakeGenericType(type));
+    }
     public JournalViewerDbContextEntityInterceptorFactory(IServiceProvider serviceProvider)
     {
         Add(Subject.OnInsert, t => GetFromServiceProviderFactory(
