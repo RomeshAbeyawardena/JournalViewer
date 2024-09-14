@@ -1,5 +1,4 @@
 ﻿using JournalViewer.Domain.Extensions;
-using JournalViewer.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -16,6 +15,7 @@ public class JournalViewDbContext : DbContext
         throw new InvalidOperationException(exception.Message, exception);
     }
 
+    public DbSet<DbCategory> Categories { get; set; }
     public DbSet<DbElement> Elements { get; set; }
     public DbSet<OutboxEntry> OutboxEntries { get; set; }
 
