@@ -36,8 +36,8 @@ public abstract class EntityInterceptorFactoryBase<TContext> : IEntityIntercepto
     public IEnumerable<IEntityInterceptor?> GetInterceptors(Subject subject, Type entityType)
     {
         var method = typeof(EntityInterceptorFactoryBase<TContext>)
-            .GetMethod(nameof(GetInterceptors), [typeof(Subject)])?
-            .MakeGenericMethod(ChangeType(entityType));
+            .GetMethod(nameof(GetUnderliningInterceptors), [typeof(Subject)])?
+            .MakeGenericMethod(ChangeType(entityType), entityType);
 
         if (method != null)
         {
@@ -50,6 +50,20 @@ public abstract class EntityInterceptorFactoryBase<TContext> : IEntityIntercepto
         // Call the method and return the result
 
         throw new InvalidOperationException($"Could not find method 'GetInterceptor' for entity type {entityType.Name}");
+    }
+
+    public IEnumerable<IEntityInterceptor<TContext, TBaseEntity>?> GetUnderliningInterceptors<TBaseEntity, TEntity>(Subject subject)
+    {
+        if (factory.TryGetValue(subject, out var value))
+        {
+            return value.Select((type) =>
+            {
+                var result = type(typeof(TEntity));
+                return (IEntityInterceptor<TContext, TBaseEntity>?)result;
+            });
+        }
+
+        return [];
     }
 
     public IEnumerable<IEntityInterceptor<TContext, TEntity>?> GetInterceptors<TEntity>(Subject subject)

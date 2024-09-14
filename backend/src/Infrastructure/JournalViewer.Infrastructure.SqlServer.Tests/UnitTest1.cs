@@ -1,13 +1,11 @@
 using JournalViewer.Domain;
 using JournalViewer.Domain.Models;
 using JournalViewer.Infrastructure.SqlServer.Interceptors;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.Extensions.Logging;
 using NSubstitute;
 
 namespace JournalViewer.Infrastructure.SqlServer.Tests;
 
-public class Tests
+public class JournalViewerDbContextEntityInterceptorFactoryTests
 {
     private JournalViewerDbContextEntityInterceptorFactory sut;
     private IServiceProvider serviceProvider;
@@ -23,7 +21,7 @@ public class Tests
     }
 
     [Test]
-    public void Test1()
+    public void EnsureFactoryReturnsValidInterceptors()
     {
         serviceProvider.GetService(typeof(AddCreatedTimestampInterceptor<Element>))
             .Returns(new AddCreatedTimestampInterceptor<Element>(timeProvider));
@@ -39,7 +37,7 @@ public class Tests
                 Is.InstanceOf<AddCreatedTimestampInterceptor<Element>>());
         });
 
-        interceptor = sut.GetInterceptors(Subject.OnSave, typeof(EntityEntry<Element>));
+        interceptor = sut.GetInterceptors(Subject.OnSave, typeof(Element));
         Assert.Multiple(() =>
         {
             Assert.That(interceptor.Count(), Is.EqualTo(1));
