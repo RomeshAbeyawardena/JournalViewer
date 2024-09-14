@@ -45,4 +45,19 @@ public class JournalViewerDbContextEntityInterceptorFactoryTests
                     Is.InstanceOf<AddEntityToOutboxOnSaveInterceptor<Element>>());
         });
     }
+
+    [Test]
+    public void EnsureFactoryReturnsNoInterceptorsWhenNotRegistered()
+    {
+        // Not setting up the serviceProvider to return any interceptors, simulating the case where they are not registered.
+
+        var interceptor = sut.GetInterceptors(Subject.OnInsert, typeof(Element));
+
+        Assert.That(interceptor.Count(), Is.EqualTo(0), "No interceptor should be returned when not registered.");
+
+        interceptor = sut.GetInterceptors(Subject.OnSave, typeof(Element));
+
+        Assert.That(interceptor.Count(), Is.EqualTo(0), "No interceptor should be returned when not registered.");
+    }
+
 }
