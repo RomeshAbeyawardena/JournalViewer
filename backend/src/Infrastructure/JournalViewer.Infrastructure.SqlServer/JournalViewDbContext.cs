@@ -42,14 +42,16 @@ public class JournalViewDbContext : DbContext
 
     public override EntityEntry<TEntity> Update<TEntity>(TEntity entity)
     {
+        var timeProvider = this.GetService<TimeProvider>();
+        using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(30), timeProvider);
         var logger = this.GetService<ILogger<JournalViewDbContext>>();
         var factory = this.GetService<IEntityInterceptorFactory<JournalViewDbContext>>();
         var subject = Subject.OnUpdate;
         try
         {
             var interceptor = factory.GetInterceptors<TEntity>(subject);
-            interceptor.HandleAsync(subject, this, entity, CancellationToken.None,
-                HandleError).Wait();
+            interceptor.HandleAsync(subject, this, entity, cancellationTokenSource.Token,
+                HandleError).GetAwaiter().GetResult();
         }
         catch (Exception exception)
         {
