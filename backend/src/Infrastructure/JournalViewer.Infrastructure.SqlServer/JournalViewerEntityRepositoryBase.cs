@@ -1,7 +1,7 @@
 ﻿namespace JournalViewer.Infrastructure.SqlServer;
 
-public class JournalViewerEntityRepositoryBase<T>(JournalViewDbContext journalViewDbContext)
-    : EntityFrameworkRepositoryBase<JournalViewDbContext,T>(journalViewDbContext)
-    where T : class
+public class JournalViewerEntityRepositoryBase<TDb, T>(JournalViewDbContext journalViewDbContext)
+    : EntityFrameworkRepositoryBase<JournalViewDbContext, TDb, T>(journalViewDbContext)
+    where TDb : class
 {
 }

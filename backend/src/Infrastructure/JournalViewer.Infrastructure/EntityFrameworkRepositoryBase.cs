@@ -13,12 +13,12 @@ public class EntityFrameworkRepositoryBase<TDbContext, TDb, T>(TDbContext contex
     public async Task<T> Upsert(T entity, CancellationToken cancellationToken,
         Func<TDb, TDb, Task<bool>>? updateChallengeAsync = null)
     {
-        if(entity is not IMappable<T, TDb> mappable)
+        if(entity is not IMappable<T> mappable)
         {
             throw new InvalidOperationException();
         }
 
-        var dbEntity = mappable.MapTo(entity);
+        var dbEntity = mappable.MapTo<TDb>(entity);
 
         if (dbEntity is IIdentifier identifier)
         {
@@ -37,10 +37,14 @@ public class EntityFrameworkRepositoryBase<TDbContext, TDb, T>(TDbContext contex
         throw new InvalidOperationException("Unable to determine state of entity, it does inherit from IIdentifier");
     }
 
-    public Task<T> Upsert<TExternal>(T entity, CancellationToken cancellationToken, Func<TExternal, TExternal, Task<bool>>? updateChallengeAsync = null)
+    public virtual Task<bool> ChallengeUpdate(TDb foundEntry, TDb originalEntry)
     {
-        return Upsert(entity, cancellationToken, updateChallengeAsync == null
-            ? null : (t, t1) => updateChallengeAsync((TExternal)(object)t, (TExternal)(object)t1));
+        return Task.FromResult(true);
+    }
+
+    Task<T> IRepository<T>.Upsert(T entity, CancellationToken cancellationToken)
+    {
+        return Upsert(entity, cancellationToken, ChallengeUpdate);
     }
 }
 
