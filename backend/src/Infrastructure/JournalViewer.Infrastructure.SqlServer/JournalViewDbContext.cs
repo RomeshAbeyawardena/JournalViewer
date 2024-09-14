@@ -15,8 +15,12 @@ public class JournalViewDbContext : DbContext
         throw new InvalidOperationException(exception.Message, exception);
     }
 
+    public DbSet<DbArticle> Articles { get; set; }
     public DbSet<DbCategory> Categories { get; set; }
+    public DbSet<DbCategoryTag> CategoryTags { get; set; }
     public DbSet<DbElement> Elements { get; set; }
+    public DbSet<DbElementTag> ElementTags { get; set; }
+    public DbSet<DbTag> Tags { get; set; }
     public DbSet<OutboxEntry> OutboxEntries { get; set; }
 
     public override async ValueTask<EntityEntry<TEntity>> AddAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default)

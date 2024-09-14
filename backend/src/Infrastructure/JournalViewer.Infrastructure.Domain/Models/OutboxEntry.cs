@@ -2,7 +2,7 @@
 
 namespace JournalViewer.Infrastructure.Domain.Models;
 
-public class OutboxEntry
+public class OutboxEntry : ICreatedTimestamp
 {
     public Guid Id { get; set; }
     public required string EntityId { get; set; }
