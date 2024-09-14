@@ -1,4 +1,5 @@
 ﻿using JournalViewer.Domain.Bootstrap;
+using JournalViewer.Domain.Characteristics;
 using JournalViewer.Domain.Extensions;
 using JournalViewer.Infrastructure.Domain.Models;
 using Microsoft.EntityFrameworkCore;
@@ -61,6 +62,12 @@ internal class AddEntityToOutboxOnSaveInterceptor<TEntity>(
                 logger.LogTrace("Unable to update outbox for entity {name}: Is not the correct type",
                  entity.Metadata.Name));
             return;
+        }
+
+        //try to set an ID beforehand, at this point EF hasn't touched the entity
+        if(entity.Entity is IIdentifier identifier && !identifier.Id.HasValue)
+        {
+            identifier.Id = Guid.NewGuid();
         }
 
         var notificationType = GetNotificationType(entity.State);

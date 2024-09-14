@@ -4,7 +4,17 @@ namespace JournalViewer.Domain.Bootstrap;
 
 public abstract class NotifiableEntityBase<T> : MappableBase<T>, INotifiableEntity<T>
 {
-    public abstract TKey GetKey<TKey>(T model);
+    public virtual TKey GetKey<TKey>(T model)
+    {
+        ArgumentNullException.ThrowIfNull(model);
+
+        if (model is not IIdentifier identifier || identifier.Id == null)
+        {
+            throw new NullReferenceException();
+        }
+
+        return (TKey)(object)identifier.Id;
+    }
 
     public abstract Task<string> PrepareNotificationAsync(T result, NotificationType notificationType, CancellationToken cancellationToken);
 
