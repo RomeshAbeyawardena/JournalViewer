@@ -1,4 +1,4 @@
-using JournalViewer.Domain;
+using JournalViewer.Domain.Bootstrap;
 using JournalViewer.Domain.Models;
 using JournalViewer.Infrastructure.SqlServer.Interceptors;
 using NSubstitute;

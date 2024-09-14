@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Reflection;
 
-namespace JournalViewer.Domain;
+namespace JournalViewer.Domain.Bootstrap;
 
 public abstract class EntityInterceptorFactoryBase<TContext> : IEntityInterceptorFactory<TContext>
 {
@@ -10,8 +10,8 @@ public abstract class EntityInterceptorFactoryBase<TContext> : IEntityIntercepto
         Func<Type, object?> factory)
     {
         var interceptor = factory(type);
-        
-        if(interceptor == null) 
+
+        if (interceptor == null)
         {
             return null;
         }
@@ -19,13 +19,15 @@ public abstract class EntityInterceptorFactoryBase<TContext> : IEntityIntercepto
         return (IEntityInterceptor)interceptor;
     }
 
-    private readonly ConcurrentDictionary<Subject, List<Func<Type,IEntityInterceptor?>>> factory = [];
+    private readonly ConcurrentDictionary<Subject, List<Func<Type, IEntityInterceptor?>>> factory = [];
 
     protected IEntityInterceptorFactory<TContext> Add(Subject subject, Func<Type, IEntityInterceptor?> entityInterceptor)
     {
-        factory.AddOrUpdate(subject, (s) => [entityInterceptor], (s, l) => { 
-            l.Add(entityInterceptor); 
-            return l; });
+        factory.AddOrUpdate(subject, (s) => [entityInterceptor], (s, l) =>
+        {
+            l.Add(entityInterceptor);
+            return l;
+        });
         return this;
     }
 
@@ -77,8 +79,8 @@ public abstract class EntityInterceptorFactoryBase<TContext> : IEntityIntercepto
 
     public IEnumerable<IEntityInterceptor<TContext, TEntity>?> GetInterceptors<TEntity>(Subject subject)
     {
-       if(factory.TryGetValue(subject, out var value))
-       {
+        if (factory.TryGetValue(subject, out var value))
+        {
             var appliedInterceptors = value.Select((type) =>
             {
                 var result = type(typeof(TEntity));
@@ -86,8 +88,8 @@ public abstract class EntityInterceptorFactoryBase<TContext> : IEntityIntercepto
             });
 
             return appliedInterceptors.All(a => a == null) ? [] : appliedInterceptors;
-       }
+        }
 
-       return [];
+        return [];
     }
 }

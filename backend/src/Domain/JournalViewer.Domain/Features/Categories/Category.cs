@@ -1,4 +1,5 @@
-﻿using JournalViewer.Domain.TypeCache;
+﻿using JournalViewer.Domain.Characteristics;
+using JournalViewer.Domain.TypeCache;
 
 namespace JournalViewer.Domain.Features.Categories;
 

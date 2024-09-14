@@ -1,4 +1,5 @@
-﻿using JournalViewer.Domain;
+﻿using JournalViewer.Domain.Bootstrap;
+using JournalViewer.Domain.Characteristics;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace JournalViewer.Infrastructure.SqlServer.Interceptors;

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using JournalViewer.Domain.Characteristics;
 
 namespace JournalViewer.Domain.Extensions
 {

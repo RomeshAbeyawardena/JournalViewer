@@ -1,8 +1,8 @@
-﻿namespace JournalViewer.Domain;
+﻿namespace JournalViewer.Domain.Bootstrap;
 
 public enum NotificationType
 {
-    Add, 
+    Add,
     Update,
     Delete
 }

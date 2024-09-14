@@ -1,4 +1,4 @@
-﻿using JournalViewer.Domain;
+﻿using JournalViewer.Domain.Bootstrap;
 using JournalViewer.Infrastructure.SqlServer.Interceptors;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 

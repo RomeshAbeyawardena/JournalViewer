@@ -1,4 +1,4 @@
-﻿using JournalViewer.Domain;
+﻿using JournalViewer.Domain.Bootstrap;
 using JournalViewer.Domain.Extensions;
 using JournalViewer.Infrastructure.Domain.Models;
 using Microsoft.EntityFrameworkCore;

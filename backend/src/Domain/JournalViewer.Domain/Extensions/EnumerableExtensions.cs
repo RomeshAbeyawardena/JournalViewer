@@ -1,4 +1,6 @@
-﻿namespace JournalViewer.Domain.Extensions;
+﻿using JournalViewer.Domain.Bootstrap;
+
+namespace JournalViewer.Domain.Extensions;
 
 public static class EnumerableExtensions
 {

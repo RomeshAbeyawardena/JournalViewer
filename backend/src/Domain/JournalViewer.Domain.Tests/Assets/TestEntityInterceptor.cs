@@ -1,4 +1,6 @@
 ﻿
+using JournalViewer.Domain.Bootstrap;
+
 namespace JournalViewer.Domain.Tests.Assets;
 
 internal class TestEntityInterceptor<TEntity>() 

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Logging;
 using JournalViewer.Infrastructure.Domain.Models;
-using JournalViewer.Domain;
+using JournalViewer.Domain.Bootstrap;
 
 namespace JournalViewer.Infrastructure.SqlServer;
 

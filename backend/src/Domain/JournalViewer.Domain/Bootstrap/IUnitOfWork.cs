@@ -1,4 +1,4 @@
-﻿namespace JournalViewer.Domain;
+﻿namespace JournalViewer.Domain.Bootstrap;
 
 public interface IUnitOfWork
 {

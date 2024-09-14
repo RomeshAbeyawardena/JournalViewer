@@ -1,4 +1,6 @@
-﻿namespace JournalViewer.Domain.Tests.Assets;
+﻿using JournalViewer.Domain.Bootstrap;
+
+namespace JournalViewer.Domain.Tests.Assets;
 
 internal class TestEntityInterceptorFactory : EntityInterceptorFactoryBase<TestContext>
 {

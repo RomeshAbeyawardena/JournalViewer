@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using JournalViewer.Domain.Bootstrap;
 
 namespace JournalViewer.Domain.Features.Categories;
 

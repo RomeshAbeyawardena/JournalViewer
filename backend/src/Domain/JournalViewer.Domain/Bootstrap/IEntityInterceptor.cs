@@ -1,4 +1,4 @@
-﻿namespace JournalViewer.Domain;
+﻿namespace JournalViewer.Domain.Bootstrap;
 
 public enum Subject
 {
@@ -10,7 +10,7 @@ public enum Subject
 public interface IEntityInterceptor
 {
     Subject Subject { get; }
-    Task<bool> CanIntercept(Subject subject, object context, 
+    Task<bool> CanIntercept(Subject subject, object context,
         object entity, CancellationToken cancellationToken);
     Task Intercept(Subject subject, object context, object entity, CancellationToken cancellationToken);
 }
@@ -18,6 +18,6 @@ public interface IEntityInterceptor
 public interface IEntityInterceptor<TContext, TEntity> : IEntityInterceptor
 {
     Task<bool> CanIntercept(Subject subject, TContext context, TEntity entity, CancellationToken cancellationToken);
-    Task Intercept(Subject subject, TContext context, 
+    Task Intercept(Subject subject, TContext context,
         TEntity entity, CancellationToken cancellationToken);
 }

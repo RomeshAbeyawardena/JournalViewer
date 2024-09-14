@@ -1,6 +1,6 @@
 ﻿using JournalViewer.Domain.TypeCache;
 
-namespace JournalViewer.Domain;
+namespace JournalViewer.Domain.Characteristics;
 
 public interface IMappable<T>
 {
@@ -16,7 +16,7 @@ public abstract class MappableBase<T> : IMappable<T>
         var sourceProperties = typeCache.Get<T>().Properties;
         var destinationProperties = typeCache.Get<TDestination>().Properties;
 
-        foreach(var sourceProperty in sourceProperties)
+        foreach (var sourceProperty in sourceProperties)
         {
             if (!sourceProperty.CanRead)
             {
@@ -26,8 +26,8 @@ public abstract class MappableBase<T> : IMappable<T>
             var destinationProperty = destinationProperties.FirstOrDefault(p => p.Name == sourceProperty.Name);
 
             var sourcePropertyValue = sourceProperty.GetValue(source);
-            if (sourcePropertyValue == null 
-                || destinationProperty == null 
+            if (sourcePropertyValue == null
+                || destinationProperty == null
                 || !destinationProperty.CanWrite
                 || destinationProperty.PropertyType != sourceProperty.PropertyType)
             {

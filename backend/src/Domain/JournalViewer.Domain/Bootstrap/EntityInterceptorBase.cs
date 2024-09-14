@@ -1,4 +1,4 @@
-﻿namespace JournalViewer.Domain;
+﻿namespace JournalViewer.Domain.Bootstrap;
 
 public abstract class EntityInterceptorBase<TContext, TEntity>(Subject subject) : IEntityInterceptor<TContext, TEntity>
 {
@@ -17,13 +17,13 @@ public abstract class EntityInterceptorBase<TContext, TEntity>(Subject subject) 
     public abstract Task Intercept(Subject subject, TContext context,
         TEntity entity, CancellationToken cancellationToken);
 
-    Task<bool> IEntityInterceptor.CanIntercept(Subject subject, object context, 
+    Task<bool> IEntityInterceptor.CanIntercept(Subject subject, object context,
         object entity, CancellationToken cancellationToken)
     {
         return CanIntercept(subject, (TContext)context, (TEntity)entity, cancellationToken);
     }
 
-    Task IEntityInterceptor.Intercept(Subject subject, object context, 
+    Task IEntityInterceptor.Intercept(Subject subject, object context,
         object entity, CancellationToken cancellationToken)
     {
         return Intercept(subject, (TContext)context, (TEntity)entity, cancellationToken);

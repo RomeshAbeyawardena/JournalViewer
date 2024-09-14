@@ -1,4 +1,5 @@
-﻿using JournalViewer.Domain;
+﻿using JournalViewer.Domain.Bootstrap;
+using JournalViewer.Domain.Characteristics;
 using JournalViewer.Domain.Extensions;
 
 namespace JournalViewer.Infrastructure.Domain.Models;

@@ -1,3 +1,4 @@
+using JournalViewer.Domain.Bootstrap;
 using JournalViewer.Domain.Tests.Assets;
 using NSubstitute;
 

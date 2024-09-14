@@ -1,4 +1,6 @@
-﻿namespace JournalViewer.Domain;
+﻿using JournalViewer.Domain.Characteristics;
+
+namespace JournalViewer.Domain.Bootstrap;
 
 public abstract class NotifiableEntityBase<T> : MappableBase<T>, INotifiableEntity<T>
 {
@@ -8,7 +10,7 @@ public abstract class NotifiableEntityBase<T> : MappableBase<T>, INotifiableEnti
 
     public NotificationType NotificationType { get; private set; }
 
-    Task<string> INotifiableEntity.PrepareNotificationAsync(object result, 
+    Task<string> INotifiableEntity.PrepareNotificationAsync(object result,
         NotificationType notificationType, CancellationToken cancellationToken)
     {
         NotificationType = notificationType;
