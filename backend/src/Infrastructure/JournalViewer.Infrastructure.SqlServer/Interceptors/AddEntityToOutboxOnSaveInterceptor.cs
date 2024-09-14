@@ -1,6 +1,6 @@
 ﻿using JournalViewer.Domain;
 using JournalViewer.Domain.Extensions;
-using JournalViewer.Domain.Models;
+using JournalViewer.Infrastructure.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Logging;

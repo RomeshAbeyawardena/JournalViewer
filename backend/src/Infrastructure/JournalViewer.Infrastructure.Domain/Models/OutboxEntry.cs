@@ -1,4 +1,6 @@
-﻿namespace JournalViewer.Domain.Models;
+﻿using JournalViewer.Domain;
+
+namespace JournalViewer.Infrastructure.Domain.Models;
 
 public class OutboxEntry
 {

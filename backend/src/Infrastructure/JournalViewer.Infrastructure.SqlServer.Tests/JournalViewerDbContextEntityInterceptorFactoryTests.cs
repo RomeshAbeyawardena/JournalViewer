@@ -23,35 +23,35 @@ public class JournalViewerDbContextEntityInterceptorFactoryTests
     [Test]
     public void EnsureFactoryReturnsValidInterceptors()
     {
-        serviceProvider.GetService(typeof(AddCreatedTimestampInterceptor<Element>))
-            .Returns(new AddCreatedTimestampInterceptor<Element>(timeProvider));
-        serviceProvider.GetService(typeof(AddEntityToOutboxOnSaveInterceptor<Element>))
-            .Returns(new AddEntityToOutboxOnSaveInterceptor<Element>(timeProvider));
-        serviceProvider.GetService(typeof(UpdateModifiedTimestampInterceptor<Element>))
-            .Returns(new UpdateModifiedTimestampInterceptor<Element>(timeProvider));
-        var interceptor = sut.GetInterceptors(Subject.OnInsert, typeof(Element));
+        serviceProvider.GetService(typeof(AddCreatedTimestampInterceptor<DbElement>))
+            .Returns(new AddCreatedTimestampInterceptor<DbElement>(timeProvider));
+        serviceProvider.GetService(typeof(AddEntityToOutboxOnSaveInterceptor<DbElement>))
+            .Returns(new AddEntityToOutboxOnSaveInterceptor<DbElement>(timeProvider));
+        serviceProvider.GetService(typeof(UpdateModifiedTimestampInterceptor<DbElement>))
+            .Returns(new UpdateModifiedTimestampInterceptor<DbElement>(timeProvider));
+        var interceptor = sut.GetInterceptors(Subject.OnInsert, typeof(DbElement));
 
         Assert.Multiple(() =>
         {
             Assert.That(interceptor.Count(), Is.EqualTo(1));
             Assert.That(interceptor.ElementAt(0),
-                Is.InstanceOf<AddCreatedTimestampInterceptor<Element>>());
+                Is.InstanceOf<AddCreatedTimestampInterceptor<DbElement>>());
         });
 
-        interceptor = sut.GetInterceptors(Subject.OnSave, typeof(Element));
+        interceptor = sut.GetInterceptors(Subject.OnSave, typeof(DbElement));
         Assert.Multiple(() =>
         {
             Assert.That(interceptor.Count(), Is.EqualTo(1));
             Assert.That(interceptor.ElementAt(0),
-                    Is.InstanceOf<AddEntityToOutboxOnSaveInterceptor<Element>>());
+                    Is.InstanceOf<AddEntityToOutboxOnSaveInterceptor<DbElement>>());
         });
 
-        interceptor = sut.GetInterceptors(Subject.OnUpdate, typeof(Element));
+        interceptor = sut.GetInterceptors(Subject.OnUpdate, typeof(DbElement));
         Assert.Multiple(() =>
         {
             Assert.That(interceptor.Count(), Is.EqualTo(1));
             Assert.That(interceptor.ElementAt(0),
-                    Is.InstanceOf<UpdateModifiedTimestampInterceptor<Element>>());
+                    Is.InstanceOf<UpdateModifiedTimestampInterceptor<DbElement>>());
         });
     }
 
@@ -60,11 +60,11 @@ public class JournalViewerDbContextEntityInterceptorFactoryTests
     {
         // Not setting up the serviceProvider to return any interceptors, simulating the case where they are not registered.
 
-        var interceptor = sut.GetInterceptors(Subject.OnInsert, typeof(Element));
+        var interceptor = sut.GetInterceptors(Subject.OnInsert, typeof(DbElement));
 
         Assert.That(interceptor.Count(), Is.EqualTo(0), "No interceptor should be returned when not registered.");
 
-        interceptor = sut.GetInterceptors(Subject.OnSave, typeof(Element));
+        interceptor = sut.GetInterceptors(Subject.OnSave, typeof(DbElement));
 
         Assert.That(interceptor.Count(), Is.EqualTo(0), "No interceptor should be returned when not registered.");
     }

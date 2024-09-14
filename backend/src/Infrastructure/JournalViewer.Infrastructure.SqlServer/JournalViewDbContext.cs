@@ -1,10 +1,11 @@
-﻿using JournalViewer.Domain;
-using JournalViewer.Domain.Extensions;
+﻿using JournalViewer.Domain.Extensions;
 using JournalViewer.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Logging;
+using JournalViewer.Infrastructure.Domain.Models;
+using JournalViewer.Domain;
 
 namespace JournalViewer.Infrastructure.SqlServer;
 
@@ -15,7 +16,7 @@ public class JournalViewDbContext : DbContext
         throw new InvalidOperationException(exception.Message, exception);
     }
 
-    public DbSet<Element> Elements { get; set; }
+    public DbSet<DbElement> Elements { get; set; }
     public DbSet<OutboxEntry> OutboxEntries { get; set; }
 
     public override async ValueTask<EntityEntry<TEntity>> AddAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
