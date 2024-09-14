@@ -1,4 +1,5 @@
 ﻿using JournalViewer.Domain;
+using JournalViewer.Domain.Extensions;
 
 namespace JournalViewer.Infrastructure.Domain.Models;
 
@@ -17,6 +18,6 @@ public class DbTag : NotifiableEntityBase<DbTag>, ICreatedTimestamp, IModifiedTi
 
     public override Task<string> PrepareNotificationAsync(DbTag result, NotificationType notificationType, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return result.PrepareAsJsonAsync(cancellationToken);
     }
 }

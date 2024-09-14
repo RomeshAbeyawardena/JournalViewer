@@ -1,4 +1,5 @@
 ﻿using JournalViewer.Domain;
+using JournalViewer.Domain.Extensions;
 
 namespace JournalViewer.Infrastructure.Domain.Models;
 
@@ -20,6 +21,6 @@ public class DbElement : NotifiableEntityBase<DbElement>, ICreatedTimestamp, IMo
 
     public override Task<string> PrepareNotificationAsync(DbElement result, NotificationType notificationType, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return result.PrepareAsJsonAsync(cancellationToken);
     }
 }

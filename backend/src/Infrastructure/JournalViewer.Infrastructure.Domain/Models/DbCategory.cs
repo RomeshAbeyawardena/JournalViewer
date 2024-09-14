@@ -1,8 +1,9 @@
 ﻿using JournalViewer.Domain;
+using JournalViewer.Domain.Extensions;
 
 namespace JournalViewer.Infrastructure.Domain.Models;
 
-public class DbCategory : NotifiableEntityBase<DbElement>, ICreatedTimestamp, IModifiedTimestamp
+public class DbCategory : NotifiableEntityBase<DbCategory>, ICreatedTimestamp, IModifiedTimestamp
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;
@@ -12,13 +13,13 @@ public class DbCategory : NotifiableEntityBase<DbElement>, ICreatedTimestamp, IM
 
     public virtual ICollection<DbCategoryTag> CategoryTags { get; set; } = [];
 
-    public override TKey GetKey<TKey>(DbElement model)
+    public override TKey GetKey<TKey>(DbCategory model)
     {
         return (TKey)(object)model.Id;
     }
 
-    public override Task<string> PrepareNotificationAsync(DbElement result, NotificationType notificationType, CancellationToken cancellationToken)
+    public override Task<string> PrepareNotificationAsync(DbCategory result, NotificationType notificationType, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return result.PrepareAsJsonAsync(cancellationToken);
     }
 }

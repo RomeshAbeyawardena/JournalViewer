@@ -20,8 +20,8 @@ public class DbArticle : NotifiableEntityBase<DbArticle>
         return (TKey)(object)model.Id;
     }
 
-    public override async Task<string> PrepareNotificationAsync(DbArticle result, NotificationType notificationType, CancellationToken cancellationToken)
+    public override Task<string> PrepareNotificationAsync(DbArticle result, NotificationType notificationType, CancellationToken cancellationToken)
     {
-        return await this.PrepareAsJsonAsync(cancellationToken);
+        return this.PrepareAsJsonAsync(cancellationToken);
     }
 }

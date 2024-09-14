@@ -5,7 +5,7 @@ namespace JournalViewer.Domain.Extensions
     public static class ObjectExtensions
     {
         // Lazy initialization of ConcurrentDictionary for caching the types
-        private static Lazy<ConcurrentDictionary<Type, Type>> GenericTypesCache =
+        private static readonly Lazy<ConcurrentDictionary<Type, Type>> GenericTypesCache =
             new(() => new());
 
         public static bool HasCreatedTimestamp(this object value, out ICreatedTimestamp? createdTimestamp)
