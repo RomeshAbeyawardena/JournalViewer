@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Reflection;
 
 namespace JournalViewer.Domain;
 
@@ -33,11 +34,16 @@ public abstract class EntityInterceptorFactoryBase<TContext> : IEntityIntercepto
         return type;
     }
 
+    private static readonly ConcurrentDictionary<Type, MethodInfo?> MethodCache = new();
+
     public IEnumerable<IEntityInterceptor?> GetInterceptors(Subject subject, Type entityType)
     {
-        var method = typeof(EntityInterceptorFactoryBase<TContext>)
-            .GetMethod(nameof(GetUnderliningInterceptors), [typeof(Subject)])?
-            .MakeGenericMethod(ChangeType(entityType), entityType);
+        var method = MethodCache.GetOrAdd(entityType, et =>
+        {
+            return typeof(EntityInterceptorFactoryBase<TContext>)
+                .GetMethod(nameof(GetUnderliningInterceptors), [typeof(Subject)])?
+                .MakeGenericMethod(ChangeType(et), et);
+        });
 
         if (method != null)
         {
@@ -47,20 +53,23 @@ public abstract class EntityInterceptorFactoryBase<TContext> : IEntityIntercepto
                 return (IEnumerable<IEntityInterceptor>)obj;
             }
         }
-        // Call the method and return the result
 
         throw new InvalidOperationException($"Could not find method 'GetInterceptor' for entity type {entityType.Name}");
     }
 
+
+    [Obsolete("This is only to be used internally in reflection, it should not be used in production code")]
     public IEnumerable<IEntityInterceptor<TContext, TBaseEntity>?> GetUnderliningInterceptors<TBaseEntity, TEntity>(Subject subject)
     {
         if (factory.TryGetValue(subject, out var value))
         {
-            return value.Select((type) =>
+            var appliedInterceptors = value.Select((type) =>
             {
                 var result = type(typeof(TEntity));
                 return (IEntityInterceptor<TContext, TBaseEntity>?)result;
             });
+
+            return appliedInterceptors.All(a => a == null) ? [] : appliedInterceptors;
         }
 
         return [];
@@ -70,11 +79,13 @@ public abstract class EntityInterceptorFactoryBase<TContext> : IEntityIntercepto
     {
        if(factory.TryGetValue(subject, out var value))
        {
-            return value.Select((type) =>
+            var appliedInterceptors = value.Select((type) =>
             {
                 var result = type(typeof(TEntity));
                 return (IEntityInterceptor<TContext, TEntity>?)result;
             });
+
+            return appliedInterceptors.All(a => a == null) ? [] : appliedInterceptors;
        }
 
        return [];
