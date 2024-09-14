@@ -48,5 +48,21 @@ public class EntityFrameworkRepositoryBase<TDbContext, TDb, T>(TDbContext contex
     {
         return Upsert(entity, cancellationToken, ChallengeUpdate);
     }
+
+    public async ValueTask<T?> FindAsync(IEnumerable<object> items, CancellationToken cancellationToken)
+    {
+        var foundEntity = await Entity.Value.FindAsync(items.ToArray(), cancellationToken);
+        if(foundEntity == default)
+        {
+            return default;
+        }
+
+        if(foundEntity is not IMappable<TDb> mappable)
+        {
+            throw new InvalidOperationException();
+        }
+
+        return mappable.MapTo<T>(foundEntity);
+    }
 }
 

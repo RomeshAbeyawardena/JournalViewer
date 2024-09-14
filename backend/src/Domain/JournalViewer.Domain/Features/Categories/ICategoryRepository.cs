@@ -1,9 +1,8 @@
 ﻿using System.Linq.Expressions;
 
-namespace JournalViewer.Domain.Features.Categories
+namespace JournalViewer.Domain.Features.Categories;
+
+public interface ICategoryRepository : IRepository<Category>
 {
-    internal interface ICategoryRepository : IRepository<Category>
-    {
-        Task<IEnumerable<Category>> GetCategories(Expression<Func<Category, bool>> filter);
-    }
+    Task<IEnumerable<Category>> GetCategories(CategoryFilter filter);
 }
