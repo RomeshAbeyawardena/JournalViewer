@@ -12,8 +12,10 @@ namespace JournalViewer.Domain.TypeCache
     {
         private static readonly Lazy<TypeCacheProvider> _provider =
             new(() => new TypeCacheProvider());
-        private static ITypeCacheProvider Instance = _provider.Value;
+        private static readonly ITypeCacheProvider instance = _provider.Value;
         private readonly ConcurrentDictionary<Type, ITypeCache> _typeCacheDictionary;
+
+        public static ITypeCacheProvider Instance => instance;
 
         public TypeCacheProvider()
         {

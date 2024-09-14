@@ -1,6 +1,8 @@
-﻿namespace JournalViewer.Domain.Features.Categories;
+﻿using JournalViewer.Domain.TypeCache;
 
-public class Category
+namespace JournalViewer.Domain.Features.Categories;
+
+public class Category : MappableBase<Category>
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;

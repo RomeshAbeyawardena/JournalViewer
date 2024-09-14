@@ -1,9 +1,11 @@
 ﻿using JournalViewer.Domain;
+using JournalViewer.Domain.TypeCache;
 using Microsoft.EntityFrameworkCore;
 
 namespace JournalViewer.Infrastructure;
 
-public class EntityFrameworkRepositoryBase<TDbContext, TDb, T>(TDbContext context) : IRepository<T>
+public class EntityFrameworkRepositoryBase<TDbContext, TDb, T>(TDbContext context, 
+    ITypeCacheProvider typeCacheProvider) : IRepository<T>
     where TDbContext : DbContext, IUnitOfWork
     where TDb : class
 {
@@ -18,7 +20,7 @@ public class EntityFrameworkRepositoryBase<TDbContext, TDb, T>(TDbContext contex
             throw new InvalidOperationException();
         }
 
-        var dbEntity = mappable.MapTo<TDb>(entity);
+        var dbEntity = mappable.MapTo<TDb>(entity, typeCacheProvider);
 
         if (dbEntity is IIdentifier identifier)
         {
