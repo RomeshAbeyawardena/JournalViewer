@@ -11,6 +11,8 @@ public class DbElement : NotifiableEntityBase<DbElement>, ICreatedTimestamp, IMo
     public DateTimeOffset Created { get; set; }
     public DateTimeOffset? Modified { get; set; }
 
+    public virtual ICollection<DbElementTag> ElementTags { get; set; } = [];
+
     public override TKey GetKey<TKey>(DbElement model)
     {
         return (TKey)(object)model.Id;

@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace JournalViewer.Infrastructure.Domain.Models;
 
-namespace JournalViewer.Infrastructure.Domain.Models
+public class DbCategoryTag
 {
-    internal class DbCategoryTag
-    {
-    }
+    public Guid Id { get; set; }
+    public Guid CategoryId { get; set; }
+    public Guid TagId { get; set; }
 }

@@ -10,6 +10,8 @@ public class DbCategory : NotifiableEntityBase<DbElement>, ICreatedTimestamp, IM
     public DateTimeOffset Created { get; set; }
     public DateTimeOffset? Modified { get; set; }
 
+    public virtual ICollection<DbCategoryTag> CategoryTags { get; set; } = [];
+
     public override TKey GetKey<TKey>(DbElement model)
     {
         return (TKey)(object)model.Id;
