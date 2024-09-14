@@ -10,14 +10,16 @@ public interface IUnitOfWork
 
 public interface IRepository<T>
 {
-    Task<T> Upsert(T entity, CancellationToken cancellationToken);
+    IUnitOfWork UnitOfWork { get; }
+    Task<T> Upsert(T entity, CancellationToken cancellationToken,
+        Func<T, T, Task<bool>>? updateChallengeAsync = null);
 }
 
 public class EntityFrameworkRepositoryBase<TDbContext, T>(TDbContext context) : IRepository<T>
     where TDbContext : DbContext, IUnitOfWork
     where T : class
 {
-    private DbSet<T> Entity => context.Set<T>();
+    protected Lazy<DbSet<T>> Entity => new(context.Set<T>);
     public IUnitOfWork UnitOfWork => context;
 
     public async Task<T> Upsert(T entity, CancellationToken cancellationToken,
@@ -27,15 +29,16 @@ public class EntityFrameworkRepositoryBase<TDbContext, T>(TDbContext context) : 
         {
             T? foundEntity;
             if (identifier.Id.HasValue &&
-                (foundEntity = await Entity.FindAsync([identifier.Id], cancellationToken)) != null
+                (foundEntity = await Entity.Value.FindAsync([identifier.Id], cancellationToken)) != null
                 && (updateChallengeAsync == null || await updateChallengeAsync(foundEntity, entity)))
             {
-                Entity.Update(entity);
+                Entity.Value.Update(entity);
                 return entity;
             }
 
-            await Entity.AddAsync(entity, cancellationToken);
+            await Entity.Value.AddAsync(entity, cancellationToken);
         }
+
         throw new InvalidOperationException("Unable to determine state of entity, it does inherit from IIdentifier");
     }
 }
