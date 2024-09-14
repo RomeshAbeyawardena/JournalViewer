@@ -1,6 +1,6 @@
 ﻿namespace JournalViewer.Domain;
 
-public abstract class NotifiableEntityBase<T> : INotifiableEntity<T>
+public abstract class NotifiableEntityBase<T> : MappableBase<T>, INotifiableEntity<T>
 {
     public abstract TKey GetKey<TKey>(T model);
 
