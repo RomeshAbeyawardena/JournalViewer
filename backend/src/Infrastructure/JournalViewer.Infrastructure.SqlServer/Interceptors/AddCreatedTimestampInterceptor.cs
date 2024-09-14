@@ -19,15 +19,15 @@ public class AddCreatedTimestampInterceptor<TEntity>(TimeProvider timeProvider)
             && entity.Entity.HasCreatedTimestamp(out var createdTimestamp) && createdTimestamp != null;
     }
 
-    public override async Task Intercept(Subject subject, JournalViewDbContext context, EntityEntry<TEntity> entity, CancellationToken cancellationToken)
+    public override Task Intercept(Subject subject, JournalViewDbContext context, EntityEntry<TEntity> entity, CancellationToken cancellationToken)
     {
-        await Task.CompletedTask;
         if(!entity.Entity.HasCreatedTimestamp(out var createdTimestamp) 
             || createdTimestamp == null)
         {
-            return;
+            return Task.CompletedTask;
         }
 
         createdTimestamp.Created = timeProvider.GetUtcNow();
+        return Task.CompletedTask;
     }
 }

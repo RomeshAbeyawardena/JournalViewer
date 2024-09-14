@@ -27,7 +27,8 @@ public class JournalViewerDbContextEntityInterceptorFactoryTests
             .Returns(new AddCreatedTimestampInterceptor<Element>(timeProvider));
         serviceProvider.GetService(typeof(AddEntityToOutboxOnSaveInterceptor<Element>))
             .Returns(new AddEntityToOutboxOnSaveInterceptor<Element>(timeProvider));
-
+        serviceProvider.GetService(typeof(UpdateModifiedTimestampInterceptor<Element>))
+            .Returns(new UpdateModifiedTimestampInterceptor<Element>(timeProvider));
         var interceptor = sut.GetInterceptors(Subject.OnInsert, typeof(Element));
 
         Assert.Multiple(() =>
@@ -43,6 +44,14 @@ public class JournalViewerDbContextEntityInterceptorFactoryTests
             Assert.That(interceptor.Count(), Is.EqualTo(1));
             Assert.That(interceptor.ElementAt(0),
                     Is.InstanceOf<AddEntityToOutboxOnSaveInterceptor<Element>>());
+        });
+
+        interceptor = sut.GetInterceptors(Subject.OnUpdate, typeof(Element));
+        Assert.Multiple(() =>
+        {
+            Assert.That(interceptor.Count(), Is.EqualTo(1));
+            Assert.That(interceptor.ElementAt(0),
+                    Is.InstanceOf<UpdateModifiedTimestampInterceptor<Element>>());
         });
     }
 

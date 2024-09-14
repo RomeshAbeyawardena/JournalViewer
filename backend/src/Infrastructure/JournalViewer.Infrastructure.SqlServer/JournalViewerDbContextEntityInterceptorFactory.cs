@@ -15,6 +15,9 @@ internal class JournalViewerDbContextEntityInterceptorFactory : EntityIntercepto
         Add(Subject.OnInsert, t => GetFromServiceProviderFactory(
             typeof(AddCreatedTimestampInterceptor<>).MakeGenericType(t),
             serviceProvider.GetService));
+        Add(Subject.OnUpdate, t => GetFromServiceProviderFactory(
+            typeof(UpdateModifiedTimestampInterceptor<>).MakeGenericType(t),
+            serviceProvider.GetService));
         Add(Subject.OnSave, t => GetFromServiceProviderFactory(
             typeof(AddEntityToOutboxOnSaveInterceptor<>).MakeGenericType(t),
             serviceProvider.GetService));
