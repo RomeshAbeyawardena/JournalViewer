@@ -2,7 +2,7 @@
 
 public interface IIdentifier
 {
-    public Guid Id { get; set; }
+    public Guid? Id { get; set; }
 }
 
 
