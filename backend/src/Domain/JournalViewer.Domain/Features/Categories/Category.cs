@@ -1,4 +1,4 @@
-﻿namespace JournalViewer.Domain.Models;
+﻿namespace JournalViewer.Domain.Features.Categories;
 
 public class Category
 {

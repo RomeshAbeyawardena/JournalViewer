@@ -8,7 +8,7 @@ using JournalViewer.Domain;
 
 namespace JournalViewer.Infrastructure.SqlServer;
 
-public class JournalViewDbContext : DbContext
+public class JournalViewDbContext : DbContext, IUnitOfWork
 {
     private void HandleError(Exception exception)
     {

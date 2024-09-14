@@ -8,5 +8,5 @@ public class Element
     public string? Summary { get; set; }
     public string? Description { get; set; }
 
-    public virtual Category Category { get; set; } = new();
+    public virtual Features.Categories.Category Category { get; set; } = new();
 }

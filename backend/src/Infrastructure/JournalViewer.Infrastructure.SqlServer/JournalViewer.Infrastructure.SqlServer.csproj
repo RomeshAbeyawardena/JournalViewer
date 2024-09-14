@@ -14,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Domain\JournalViewer.Domain\JournalViewer.Domain.csproj" />
     <ProjectReference Include="..\JournalViewer.Infrastructure.Domain\JournalViewer.Infrastructure.Domain.csproj" />
+    <ProjectReference Include="..\JournalViewer.Infrastructure\JournalViewer.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
