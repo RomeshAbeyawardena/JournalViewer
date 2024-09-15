@@ -11,17 +11,30 @@ public class EntityFrameworkRepositoryBase<TDbContext, TDb, T>(TDbContext contex
     where TDb : class
 {
     protected Lazy<DbSet<TDb>> Entity => new(context.Set<TDb>);
+    protected virtual TDb Map(T source)
+    {
+        throw new InvalidOperationException("Unable to map between domain and entity types");
+    }
+
+    protected virtual T Map(TDb source)
+    {
+        throw new InvalidOperationException("Unable to map between domain and entity types");
+    }
+
     public IUnitOfWork UnitOfWork => context;
 
     public async Task<T> Upsert(T entity, CancellationToken cancellationToken,
         Func<TDb, TDb, Task<bool>>? updateChallengeAsync = null)
     {
-        if(entity is not IMappable<T> mappable)
+        TDb dbEntity;
+        if (entity is IMappable<T> mappable)
         {
-            throw new InvalidOperationException();
+            dbEntity = mappable.MapTo<TDb>(entity, typeCacheProvider);
         }
-
-        var dbEntity = mappable.MapTo<TDb>(entity, typeCacheProvider);
+        else
+        {
+            dbEntity = Map(entity);
+        }
 
         if (dbEntity is IIdentifier identifier)
         {
@@ -58,9 +71,10 @@ public class EntityFrameworkRepositoryBase<TDbContext, TDb, T>(TDbContext contex
             return default;
         }
 
+        //try to use domain based mapping before using the potentially overridden members for mapping
         if(foundEntity is not IMappable<TDb> mappable)
         {
-            throw new InvalidOperationException();
+            return Map(foundEntity);
         }
 
         return mappable.MapTo<T>(foundEntity);
