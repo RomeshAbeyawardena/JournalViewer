@@ -26,7 +26,7 @@ public static class QueryableExtensions
         return source.OrderByDescending(ToLambda<T>(propertyName));
     }
 
-    public static IQueryable<T> S<T>(this IQueryable<T> query, IPagedRequest request)
+    public static IQueryable<T> AsPaged<T>(this IQueryable<T> query, IPagedRequest request)
     {
         if(request.Skip.HasValue)
         {

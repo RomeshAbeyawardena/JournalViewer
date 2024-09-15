@@ -6,4 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Domain\JournalViewer.Domain\JournalViewer.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

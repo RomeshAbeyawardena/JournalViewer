@@ -25,7 +25,7 @@ public class CategoryRepository(JournalViewDbContext dbContext, ITypeCacheProvid
             query.And(c => c.Name.Contains(categoryFilter.NameContains));
         }
 
-        var items = await entity.Where(query).ToListAsync();
+        var items = await entity.Where(query).AsPaged(request).ToListAsync();
 
         return items.Select(i => i.MapTo<Category>(i));
     }
