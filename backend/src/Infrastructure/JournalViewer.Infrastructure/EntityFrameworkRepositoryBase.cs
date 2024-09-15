@@ -1,6 +1,7 @@
 ﻿using JournalViewer.Domain.Bootstrap;
 using JournalViewer.Domain.Characteristics;
 using JournalViewer.Domain.TypeCache;
+using LinqKit;
 using Microsoft.EntityFrameworkCore;
 
 namespace JournalViewer.Infrastructure;
@@ -10,7 +11,12 @@ public class EntityFrameworkRepositoryBase<TDbContext, TDb, T>(TDbContext contex
     where TDbContext : DbContext, IUnitOfWork
     where TDb : class
 {
-    protected Lazy<DbSet<TDb>> Entity => new(context.Set<TDb>);
+    private readonly Lazy<DbSet<TDb>> _entity = new(context.Set<TDb>);
+    private readonly Lazy<ExpressionStarter<TDb>> _expressionStarter = new(PredicateBuilder.New<TDb>);
+
+    protected Lazy<ExpressionStarter<TDb>> expressionStarter => _expressionStarter;
+    protected Lazy<DbSet<TDb>> Entity => _entity;
+
     protected virtual TDb Map(T source)
     {
         throw new InvalidOperationException("Unable to map between domain and entity types");

@@ -1,4 +1,5 @@
-﻿using JournalViewer.Domain.Features.Categories;
+﻿using JournalViewer.Domain;
+using JournalViewer.Domain.Features.Categories;
 using JournalViewer.Domain.TypeCache;
 using JournalViewer.Infrastructure.Domain.Models;
 
@@ -8,8 +9,9 @@ public class CategoryRepository(JournalViewDbContext dbContext, ITypeCacheProvid
     : JournalViewerEntityRepositoryBase<DbCategory, Category>(dbContext,
         typeCacheProvider), ICategoryRepository
 {
-    public Task<IEnumerable<Category>> GetCategories(CategoryFilter categoryFilter)
+    public async Task<IEnumerable<Category>> GetCategories(IPagedRequest request, CategoryFilter categoryFilter)
     {
-        return Task.FromResult(Array.Empty<Category>().AsEnumerable());
+        var query = Entity.Value;
+
     }
 }
