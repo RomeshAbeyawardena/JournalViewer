@@ -1,6 +1,4 @@
 ﻿using JournalViewer.Domain;
-using LinqKit;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace JournalViewer.Infrastructure;
@@ -26,29 +24,8 @@ public static class QueryableExtensions
         return source.OrderByDescending(ToLambda<T>(propertyName));
     }
 
-    public static IQueryable<T> AsPaged<T>(this IQueryable<T> query, IPagedRequest request)
+    public static IPagedResponse<T> AsPaged<T>(this IQueryable<T> query, IPagedRequest request)
     {
-        if(request.Skip.HasValue)
-        {
-            query = query.Skip(request.Skip.Value);
-        }
-
-        if (request.Take.HasValue)
-        {
-            query = query.Skip(request.Take.Value);
-        }
-
-        if (!string.IsNullOrWhiteSpace(request.OrderBy))
-        {
-            switch (request.SortDirection)
-            {
-                case System.ComponentModel.ListSortDirection.Ascending:
-                    return query.OrderBy(request.OrderBy);
-                case System.ComponentModel.ListSortDirection.Descending:
-                    return query.OrderByDescending(request.OrderBy);
-            }
-        }
-
-        return query;
+        return new PagedResponse<T>(query, request);
     }
 }
