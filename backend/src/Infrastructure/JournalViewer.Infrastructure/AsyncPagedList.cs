@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using JournalViewer.Infrastructure;
+using System.Collections;
 using System.Data.Entity;
 
 namespace JournalViewer.Domain;
@@ -16,6 +17,13 @@ public class AsyncPagedList<T>(IPagedResponse<T> response,
         return await response.ToListAsync(cancellationToken
             .GetValueOrDefault(CancellationToken.None));
     });
+
+    public IPagedList<TDestination> ProjectTo<TDestination>(Func<T, TDestination> projection, CancellationToken cancellationToken)
+    {
+        var compiledResponse = new CompiledPagedResponse<TDestination>(TotalCount, response.Select(projection), response.PagedRequest);
+
+        return new AsyncPagedList<TDestination>(compiledResponse, cancellationToken);
+    }
 
     public int Count => _list.Value.GetAwaiter().GetResult().Count;
     public int TotalCount => response.TotalCount;

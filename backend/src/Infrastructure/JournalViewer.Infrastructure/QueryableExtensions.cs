@@ -34,13 +34,4 @@ public static class QueryableExtensions
         return await new AsyncPagedList<T>(response, cancellationToken)
             .GetResultAsync();
     }
-
-    public static async Task<IPagedList<TDestination>> ToPagedList<T, TDestination>(
-        this IPagedResponse<T> response, CancellationToken cancellationToken,
-        Func<T, TDestination> projectTo)
-    {
-        return await new AsyncPagedList<TDestination>(response.Select(projectTo), cancellationToken)
-            
-            .GetResultAsync();
-    }
 }

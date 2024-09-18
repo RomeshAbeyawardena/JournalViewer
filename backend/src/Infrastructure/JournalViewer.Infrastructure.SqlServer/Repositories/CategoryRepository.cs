@@ -2,7 +2,6 @@
 using JournalViewer.Domain.Features.Categories;
 using JournalViewer.Domain.TypeCache;
 using JournalViewer.Infrastructure.Domain.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace JournalViewer.Infrastructure.SqlServer.Repositories;
 
@@ -27,6 +26,6 @@ public class CategoryRepository(JournalViewDbContext dbContext, ITypeCacheProvid
 
         var items = await entity.Where(query).AsPaged(request).ToPagedList(cancellationToken);
 
-        return items.Select(i => i.MapTo<Category>(i));
+        return items.ProjectTo(c => c.MapTo<Category>(c), cancellationToken);
     }
 }

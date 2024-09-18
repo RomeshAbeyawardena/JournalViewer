@@ -4,6 +4,31 @@ using JournalViewer.Domain;
 
 namespace JournalViewer.Infrastructure;
 
+public class CompiledPagedResponse<T>(int totalCount, IEnumerable<T> query, IPagedRequest pagedRequest) : IPagedResponse<T>
+{
+    private readonly Lazy<IEnumerable<T>> _query = new(query.ToList);
+
+    public int Count => _query.Value.Count();
+    public int TotalCount => totalCount;
+    public int PageSize => pagedRequest.Take.GetValueOrDefault();
+    public Type ElementType => throw new NotSupportedException();
+    public Expression Expression => throw new NotSupportedException();
+    public IQueryProvider Provider => throw new NotSupportedException();
+
+    public IEnumerator<T> GetEnumerator()
+    {
+        return _query.Value.GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return _query.Value.GetEnumerator();
+    }
+
+    IPagedRequest IPagedResponse<T>.PagedRequest => pagedRequest;
+}
+
+
 public class PagedResponse<T>(IQueryable<T> query, IPagedRequest pagedRequest) : IPagedResponse<T>
 {
     private readonly Lazy<IQueryable<T>> _pagedQuery = new(() =>
@@ -50,4 +75,7 @@ public class PagedResponse<T>(IQueryable<T> query, IPagedRequest pagedRequest) :
     {
         return _pagedQuery.Value.GetEnumerator();
     }
+
+
+    IPagedRequest IPagedResponse<T>.PagedRequest => pagedRequest;
 }
