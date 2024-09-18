@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JournalViewer.Infrastructur
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JournalViewer.Infrastructure.Domain", "Infrastructure\JournalViewer.Infrastructure.Domain\JournalViewer.Infrastructure.Domain.csproj", "{DBF64DEB-572E-4015-AD15-DB1481E5B74F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JournalViewer.Infrastructure.Tests", "Infrastructure\JournalViewer.Infrastructure.Tests\JournalViewer.Infrastructure.Tests.csproj", "{A74EBAC2-C051-48AB-87F0-5B11E4E41784}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -66,6 +68,10 @@ Global
 		{DBF64DEB-572E-4015-AD15-DB1481E5B74F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DBF64DEB-572E-4015-AD15-DB1481E5B74F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DBF64DEB-572E-4015-AD15-DB1481E5B74F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A74EBAC2-C051-48AB-87F0-5B11E4E41784}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A74EBAC2-C051-48AB-87F0-5B11E4E41784}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A74EBAC2-C051-48AB-87F0-5B11E4E41784}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A74EBAC2-C051-48AB-87F0-5B11E4E41784}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{95077167-1730-4904-956B-3FADFB3C86CA} = {DDA3AC80-0A38-4620-80B2-2560A01B745E}
@@ -76,5 +82,6 @@ Global
 		{48848EE7-60DF-4AD3-93C3-2187F9C16AA1} = {220ACA7D-0402-4481-A507-657BF675BC1E}
 		{57F39FA3-B6D1-40CB-9513-2EBD7592E49D} = {DDA3AC80-0A38-4620-80B2-2560A01B745E}
 		{DBF64DEB-572E-4015-AD15-DB1481E5B74F} = {DDA3AC80-0A38-4620-80B2-2560A01B745E}
+		{A74EBAC2-C051-48AB-87F0-5B11E4E41784} = {DDA3AC80-0A38-4620-80B2-2560A01B745E}
 	EndGlobalSection
 EndGlobal

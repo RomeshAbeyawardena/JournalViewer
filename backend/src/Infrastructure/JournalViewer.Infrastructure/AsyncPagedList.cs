@@ -4,11 +4,6 @@ using System.Data.Entity;
 
 namespace JournalViewer.Domain;
 
-public interface IAsyncPagedList<T> : IPagedList<T>
-{
-    ValueTask<IPagedList<T>> GetResultAsync();
-}
-
 public class AsyncPagedList<T>(IPagedResponse<T> response, 
     CancellationToken? cancellationToken = null) : IAsyncPagedList<T>
 {
