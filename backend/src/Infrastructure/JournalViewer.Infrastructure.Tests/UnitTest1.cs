@@ -39,7 +39,7 @@ public class AsyncPagedListTests
     [Test]
     public void Test1()
     {
-        sut.ProjectTo(s => s.MapTo<MappableDomain>(s), CancellationToken.None);
+        var s = sut.ProjectTo(s => s.MapTo<MappableDomain>(s), CancellationToken.None);
         Assert.Pass();
     }
 }
