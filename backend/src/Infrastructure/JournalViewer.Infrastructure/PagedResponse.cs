@@ -4,7 +4,8 @@ using JournalViewer.Domain;
 
 namespace JournalViewer.Infrastructure;
 
-public class CompiledPagedResponse<T>(int totalCount, IEnumerable<T> query, IPagedRequest pagedRequest) : IPagedResponse<T>
+internal class CompiledPagedResponse<T>(int totalCount, 
+    IEnumerable<T> query, IPagedRequest pagedRequest) : IPagedResponse<T>
 {
     private readonly Lazy<IEnumerable<T>> _query = new(query.ToList);
 

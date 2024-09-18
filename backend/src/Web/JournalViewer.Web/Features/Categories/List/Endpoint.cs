@@ -2,13 +2,13 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace JournalViewer.Web.Features.Categories;
+namespace JournalViewer.Web.Features.Categories.List;
 
 public static class Endpoint
 {
     public static async Task<IResult> GetCategories(
         IMediator mediator,
-        [FromQuery]GetCategories query, 
+        [FromQuery] GetCategories query,
         CancellationToken cancellationToken)
     {
         var results = await mediator.Send(query, cancellationToken);
@@ -18,6 +18,6 @@ public static class Endpoint
             return Results.NoContent();
         }
 
-        return Results.Ok(results.Select(r => r.MapTo<CategoryDto>(r)));
+        return Results.Ok(results.ProjectTo(r => r.MapTo<CategoryDto>(r), cancellationToken));
     }
 }

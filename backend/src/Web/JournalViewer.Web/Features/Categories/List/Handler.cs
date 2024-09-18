@@ -3,7 +3,7 @@ using JournalViewer.Domain.Features.Categories;
 using JournalViewer.Domain.Features.Categories.Queries;
 using MediatR;
 
-namespace JournalViewer.Web.Features.Categories;
+namespace JournalViewer.Web.Features.Categories.List;
 
 public class Handler(ICategoryRepository categoryRepository) : IRequestHandler<GetCategories, IPagedList<Category>>
 {
