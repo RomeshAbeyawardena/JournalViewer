@@ -10,7 +10,7 @@ public class CategoryRepository(JournalViewDbContext dbContext, ITypeCacheProvid
     : JournalViewerEntityRepositoryBase<DbCategory, Category>(dbContext,
         typeCacheProvider), ICategoryRepository
 {
-    public async Task<IEnumerable<Category>> GetCategories(IPagedRequest request, CategoryFilter categoryFilter)
+    public async Task<IPagedList<Category>> GetCategories(IPagedRequest request, CategoryFilter categoryFilter, CancellationToken cancellationToken)
     {
         var entity = Entity.Value;
         var query = Query.Value;
@@ -25,7 +25,7 @@ public class CategoryRepository(JournalViewDbContext dbContext, ITypeCacheProvid
             query.And(c => c.Name.Contains(categoryFilter.NameContains));
         }
 
-        var items = await entity.Where(query).AsPaged(request).ToListAsync();
+        var items = await entity.Where(query).AsPaged(request).ToPagedList(cancellationToken);
 
         return items.Select(i => i.MapTo<Category>(i));
     }
